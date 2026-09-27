@@ -460,7 +460,7 @@ y Netlify redirige a la página de confirmación de ese idioma: `es/confirmacion
 Netlify Forms. No hay servidor, ni base de datos, ni código de servidor.
 
 **Tarea manual de la titular, obligatoria:** en el panel de Netlify, *Forms → Notification
-settings*, configurar a qué dirección de correo llegan las solicitudes. Sin ese paso los
+settings*, configurar la dirección de notificación **`vero22ramm@gmail.com`**. Sin ese paso los
 presupuestos se pierden en silencio. Es lo único del despliegue que no se puede hacer por API, y
 se verifica antes de dar por terminado el despliegue.
 
@@ -497,6 +497,20 @@ que no está en el repositorio no se sirve. Por eso viven en `assets/img/`, no e
 Formato de publicación: WebP con respaldo JPEG, `width` y `height` explícitos en el marcado para
 evitar desplazamiento de maquetación, y `loading="lazy"` en todo lo que esté bajo el primer
 pliegue.
+
+### Fotos disponibles al comienzo de la implementación
+
+| Archivo origen | Dimensiones | Rol | Observación |
+|---|---|---|---|
+| `recursos/veronica.jpg` | 400 × 400, 27 KB | Foto de perfil en "Sobre mí" | Baja para pantallas retina: se ve suave al doble de densidad. Se publica igual y se avisa a la titular |
+| `recursos/top.jpg` | 1400 × 349, 79 KB | Banner de portada, relación 4:1 | Proporción muy panorámica: como franja de cabecera funciona; como imagen de la sección "Sobre mí" no |
+
+Las dos se procesan a WebP en `assets/img/` y se versionan. La titular va a subir más fotos más
+adiante, así que **el diseño no puede depender de que existan solo dos imágenes**: la galería de
+"Sobre mí" se compone con una foto principal y acepta más sin cambios de maquetación.
+
+Ningún modelo de lenguaje de esta sesión puede ver las imágenes, así que **la colocación de cada
+foto la confirma la titular mirándolas en el navegador**, no quien implemente.
 
 ## 12. Estrategia de pruebas
 
