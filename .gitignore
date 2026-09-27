@@ -1,3 +1,7 @@
+# Material local de trabajo: CV en PDF, fotos, imágenes sin procesar.
+# NO se versiona a propósito (ver README de la carpeta).
+recursos/
+
 node_modules/
 dist/
 build/
