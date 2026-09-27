@@ -143,11 +143,11 @@ main > section h2 {
   padding-left: 1.25rem;
 }
 
-/* El botón de menú solo existe por debajo de 48rem. Arriba de ese ancho queda
-   en display: none por la regla base, que es lo que hace que el sitio sea
-   navegable sin CSS. */
+/* Sin scripts este botón no puede hacer nada, así que no se dibuja. La regla
+   que lo muestra vive más abajo, dentro de un max-width y con la clase "js",
+   que es la única combinación en la que hay alguien a quien le sirva. */
 .boton-menu {
-  display: block;
+  display: none;
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
@@ -184,12 +184,19 @@ main > section h2 {
   left: 0;
 }
 
-/* El menú desplegado es una lista apilada a pantalla completa en la barra.
-   Sin JavaScript el botón no hace nada, y en ese caso la lista sigue
-   visible: el CSS de la barra móvil esconde los enlaces, pero el atributo
-   hidden que aplica el script es lo único que los saca. */
+/* El menú se ve por omisión y solo se pliega si hay scripts.
+
+   La clase "js" la pone un script en línea del <head>, no main.js: un defer
+   se ejecuta después de analizar el documento, o sea después de que el
+   navegador ya pintó el menú abierto, y eso sería un destello en cada carga.
+
+   Consecuencia de este orden: quien llega sin scripts —o con un script
+   bloqueado por una extensión— ve la navegación entera, desplegada, en vez
+   de un botón que no hace nada. Un sitio de una profesional que vive de que
+   la visiten tiene que seguir siendo navegable en ese caso, y no lo sería si
+   el CSS lo ocultara por su cuenta. */
 .menu {
-  display: none;
+  display: flex;
   flex-basis: 100%;
   flex-direction: column;
   align-items: flex-start;
@@ -197,7 +204,11 @@ main > section h2 {
   padding-block: 0.75rem;
 }
 
-.menu.abierto {
+.js .menu {
+  display: none;
+}
+
+.js .menu.abierto {
   display: flex;
 }
 
@@ -211,12 +222,21 @@ main > section h2 {
   padding-left: 0;
 }
 
-@media (min-width: 48rem) {
-  .boton-menu {
-    display: none;
+/* El botón de menú tampoco se dibuja sin scripts: sería un control que no
+   hace nada, y un control muerto es peor que un enlace de más. Esta es la
+   única regla del archivo con max-width, y existe por esto: el botón tiene
+   que aparecer por debajo del punto en que la barra deja de necesitarlo, y
+   "por debajo de" no se puede escribir con min-width. */
+@media (max-width: 47.9375rem) {
+  .js .boton-menu {
+    display: block;
   }
+}
 
-  .menu {
+@media (min-width: 48rem) {
+
+  .menu,
+  .js .menu {
     display: flex;
     flex-basis: auto;
     flex-direction: row;
@@ -690,4 +710,47 @@ footer {
   .pie-legal {
     grid-column: 1 / -1;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Confirmación de envío
+
+   Lo inserta el script en lugar del formulario, con el mismo borde y el
+   mismo acento que los campos, para que se lea como parte del formulario y
+   no como un mensaje suelto.
+   -------------------------------------------------------------------------- */
+
+.form-exito {
+  border: 1.5px solid var(--acento);
+  border-radius: 2px;
+  padding: 1.25rem 1.5rem;
+  max-width: 46rem;
+  font-weight: 600;
+  color: var(--acento);
+}
+
+/* --------------------------------------------------------------------------
+   Páginas de confirmación
+
+   Son documentos sin barra de navegación: el visitante acaba de enviar algo
+   y el único destino útil es volver al inicio.
+   -------------------------------------------------------------------------- */
+
+.pagina-simple main > section {
+  padding-block: clamp(4rem, 14vh, 9rem);
+}
+
+.simple {
+  width: 100%;
+  max-width: 34rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3rem);
+}
+
+.simple p {
+  max-width: var(--ancho-texto);
+}
+
+.simple-acciones {
+  margin-top: 2rem;
 }

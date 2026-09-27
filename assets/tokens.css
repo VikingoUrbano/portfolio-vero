@@ -183,7 +183,7 @@ a:focus-visible {
 
 /* Texto que solo existe para lectores de pantalla. La técnica es recorte, no
    display: none ni visibility: hidden, porque display: none saca el elemento
-   display: none saca el elemento del árbol de accesibilidad y el texto deja de leerse. */
+   del árbol de accesibilidad y el texto deja de leerse. */
 .visualmente-oculto {
   position: absolute;
   width: 1px;

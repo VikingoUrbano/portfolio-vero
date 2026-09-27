@@ -21,6 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>document.documentElement.classList.add("js");</script>
 <link rel="stylesheet" href="/assets/tokens.css">
 <link rel="stylesheet" href="/assets/layout.css">
 </head>
@@ -184,8 +185,8 @@
     </div>
 
     <div class="envio">
-      <button type="submit" class="boton">Send request</button>
-      <p class="form-estado" role="status" aria-live="polite"></p>
+      <button type="submit" class="boton" data-enviando="Sending…" data-original="Send request">Send request</button>
+      <p class="form-estado" role="status" aria-live="polite" data-error="I couldn&rsquo;t send your request. Email me at vero22ramm@gmail.com and we&rsquo;ll sort it out." data-exito="Message sent. Thank you. I&rsquo;ll reply within two business days."></p>
     </div>
   </form>
 </section>
