@@ -20,6 +20,17 @@
    Contenedor y secciones
    -------------------------------------------------------------------------- */
 
+/* Estas tres reglas existían separadas: .barra-interior y .pie-interior
+   acotaban su ancho a --ancho-maximo y se centraban, pero las secciones de
+   <main> no tenían nada de eso. El resultado era una barra y un pie centrados
+   a 1088 px con el contenido de en medio ocupando la pantalla entera, y en un
+   monitor de 2560 px la desalineación entre la barra y el texto llegó a medir
+   736 px a cada lado. La clase .contenedor de arriba está definida desde el
+   principio y nunca se aplicó a nada; el sitio se construía sin ella.
+
+   Las secciones se acotan aquí directamente, y por eso .contenedor no se usa
+   en ninguna parte del HTML. Si alguna vez hace falta, se borra de aquí para
+   que no queden dos reglas diciendo lo mismo. */
 .contenedor {
   width: 100%;
   max-width: var(--ancho-maximo);
@@ -28,6 +39,10 @@
 }
 
 main > section {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3rem);
   padding-block: clamp(3rem, 8vw, 6rem);
 }
 
@@ -405,11 +420,11 @@ main > section h2 {
   }
 }
 
-@media (min-width: 68rem) {
-  .servicios {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
+/* Aquí hubo un escalón de tres columnas a partir de 68rem, y se quitó al bajar
+   --ancho-maximo a 60rem. Dentro de una caja de 960 px, tres columnas dan
+   266 px cada una y cinco servicios dejan además una fila huérfana de dos;
+   dos columnas dan 416 px, que es lo que hace falta para leer el título de un
+   servicio y sus dos líneas de descripción sin que se parta nada. */
 
 /* --------------------------------------------------------------------------
    Formulario
@@ -639,15 +654,23 @@ main > section h2 {
 }
 
 @media (min-width: 48rem) {
+  /* Tres columnas quedaban estrechas dentro de la caja de 60rem: 267 px para
+     un rótulo como "Traductorado Público, Literario y Científico-Técnico de
+     Inglés" es partirlo en cinco líneas. Con dos columnas cada bloque dispone
+     de 416 px, y el de experiencia, que es el único con una descripción
+     larga, se queda con la fila entera. */
   .credenciales {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2rem;
   }
 
+  .credencial:last-child {
+    grid-column: 1 / -1;
+  }
+
   /* El rótulo de cada credencial apila la línea gruesa sobre la fecha en
-     lugar de ponerlas en fila. En una columna de un tercio del ancho de
-     palabras por línea, que es peor que apilarlas. */
-     palabras por línea, que es peor que apilarlas. */
+     lugar de ponerlas en fila, porque en una columna estrecha se leen mejor
+     apiladas. */
   .credencial dt {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

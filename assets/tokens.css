@@ -90,7 +90,16 @@
   --borde: #E4E0DA;
   --borde-campo: #8A8172;
 
-  --ancho-maximo: 68rem;
+  /* El ancho de la caja de contenido, no el de la ventana. 60rem son 960 px:
+     es el ancho al que el contenido deja de necesitar más aire lateral y
+     empieza a repartirlo. Bajó de 68rem porque a 1088 px las secciones se
+     leían demasiado abiertas en pantallas anchas.
+
+     El texto corrido se mide aparte y no se toca: 38rem son 608 px, unos 72
+     caracteres por línea, que es el intervalo cómodo para leer. Ensanchar la
+     caja no obliga a ensanchar la línea, y por eso son dos variables y no
+     una. */
+  --ancho-maximo: 60rem;
   --ancho-texto: 38rem;
 
   --serif: "Fraunces", Georgia, "Times New Roman", serif;
