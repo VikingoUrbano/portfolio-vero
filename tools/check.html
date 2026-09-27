@@ -137,14 +137,28 @@ function revisarDocumento(ruta) {
        !!primero && primero.classList.contains("portada-franja"),
        primero ? primero.className || primero.tagName : "(vacio)");
 
-    // Las dos fotos decorativas llevan alt vacio a proposito: el retrato
-    // circular ya identifica a la persona y la foto de la puerta no dice
-    // nada que el texto no diga. Un alt descriptivo seria redundante.
+    // Las dos fotos del sitio llevan alt vacio a proposito. La franja de la
+    // cabecera es un adorno y la foto de la puerta no dice nada que el texto
+    // no diga. Un alt descriptivo seria redundante en los dos casos.
+    //
+    // Antes habia una tercera, el retrato circular, con alt con el nombre.
+    // Se quito, asi que la cuenta bajo a dos.
     const decorativas = [].slice.call(d.querySelectorAll(
       ".portada-franja img, .sobre-mi-foto img"));
     ok(p("las fotos decorativas tienen alt vacio"),
        decorativas.length === 2 && decorativas.every((i) => i.getAttribute("alt") === ""),
        decorativas.length + " encontradas");
+
+    // Ninguna imagen puede quedar apuntando a un archivo que no existe. Al
+    // borrar el retrato, un src colgado daria un icono de imagen rota en
+    // produccion sin que ningun control de este arnes se entere.
+    const imgsRotas = [].slice.call(d.querySelectorAll("img")).filter(function (i) {
+      var ruta = new URL(i.getAttribute("src"), base).pathname;
+      return pedir(ruta) === null;
+    });
+    ok(p("ninguna imagen apunta a un archivo ausente"),
+       imgsRotas.length === 0,
+       imgsRotas.map(function (i) { return i.getAttribute("src"); }).join(", "));
 
     // El portfolio no existe, asi que la unica prueba de calidad es la linea
     // de tiempo. Se comprueba que las seis entradas sigan ahii y fechadas: si

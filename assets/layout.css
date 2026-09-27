@@ -598,34 +598,23 @@ main > section h2 {
    Sobre mí
    -------------------------------------------------------------------------- */
 
+/* Esta sección era una retícula de dos columnas: 14rem para el retrato
+   circular y el resto para el texto. Sin retrato se queda en una sola
+   columna, y el texto pasa de 592 px a los 864 px del ancho de la sección.
+
+   Se conserva el grid de una sola columna y no un bloque normal por el hueco
+   entre el texto y la foto de abajo, que gap resuelve en una línea. */
 #sobre-mi {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 1.5rem 3rem;
-  align-items: start;
+  gap: 1.5rem;
 }
 
-.retrato {
-  margin: 0;
-}
-
-.retrato img {
-  width: 100%;
-  max-width: 11rem;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 50%;
-  /* El círculo necesita un borde: sin él, el recorte redondeado deja el pelo
-     recortado contra el fondo de la página. */
-  border: 3px solid var(--acento);
-}
-
-/* El texto justificado ocupa todo el ancho de su columna, que es lo que se
+/* El texto justificado ocupa todo el ancho de la sección, que es lo que se
    pidió. Por eso se quitó el max-width que tenía: --ancho-texto son 608 px y
-   la columna del bloque de texto mide 592 px, o sea que hoy el tope no
-   mordía. Pero si --ancho-maximo sube un día, el tope empezaría a cortar el
-   texto antes del borde de la columna y la justificación se notaría justo en
-   ese escalón, que es donde más se ve.
+   con el retrato el bloque de texto medía 592 px, o sea que el tope no
+   mordía. Ahora la columna son 864 px, así que el tope no solo sobra sino que
+   cortaría el texto a dos tercios.
 
    La partición de palabras no es adorno: un texto justificado sin guiones
    abre ríos de espacio en blanco, sobre todo en castellano. Firefox usa el
@@ -640,19 +629,22 @@ main > section h2 {
   margin-block: 0 1.25rem;
 }
 
-/* La segunda foto ocupa el ancho entero de la sección y va debajo de los dos
-   bloques de arriba, que se quedan en la retícula de 14rem + texto.
+/* La foto de la puerta ocupa el ancho entero de la sección y va debajo del
+   texto.
 
-   Va al final y no al principio a propósito: el retrato circular es lo que
-   identifica a la persona, y la foto grande es contexto. Puesta delante
-   obligaba a saltar el texto para llegar a la cara.
+   Antes había arriba un retrato circular en 14rem y el texto se quedaba en lo
+   que quedaba, 592 px. Sin retrato la sección es de una sola columna: el texto
+   toma los 864 px de la caja y la foto baja a ocupar el ancho entero.
+
+   Que la foto vaya al final y no al principio es decisión, no descuido: lo que
+   identifica a la persona es el texto de aquí, y la foto es contexto. Puesta
+   delante obligaba a saltar el texto para llegar al marco de la puerta.
 
    La proporción sale de la foto misma (1600 x 777) y no de un 16:9 de vídeo,
    que recortaría por arriba y por abajo justo lo que hay en el centro: el
    marco de la puerta. */
 .sobre-mi-foto {
   margin: 0;
-  grid-column: 1 / -1;
 }
 
 .sobre-mi-foto img {
@@ -663,11 +655,9 @@ main > section h2 {
   border: 1px solid var(--borde-fino);
 }
 
-@media (min-width: 48rem) {
-  #sobre-mi {
-    grid-template-columns: 14rem minmax(0, 1fr);
-  }
-}
+/* Aquí estaba el escalón que partía la sección en 14rem para el retrato y el
+   resto para el texto. Se quitó junto con el retrato, que era lo único que
+   ocupaba esos 14rem. */
 
 /* --------------------------------------------------------------------------
    Credenciales

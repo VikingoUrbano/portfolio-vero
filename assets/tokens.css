@@ -85,8 +85,15 @@
      El sitio es oscuro de arriba abajo, sin modo claro ni conmutador. Los tres
      acentos pastel no son una decisión de gusto: se midieron sobre las tres
      fotos propias para sacar de ahí los colores, en vez de inventarlos. El
-     verde salvia sale del retrato, el azul cielo de la franja de la cabecera y
-     el durazno de la piel y de la arena de la foto de la puerta.
+     azul cielo sale de la franja de la cabecera y el durazno de la piel y de la
+     arena de la foto de la puerta.
+
+     El verde salvia se midió también sobre una foto propia, la del retrato
+     circular que hubo en la sección Sobre mí. Esa foto ya no está en el
+     repositorio, así que el color no se puede volver a medir desde aquí: si
+     algún día hay que tocarlo, el valor de abajo es el que manda y
+     tools/contrast.test.mjs es el que avisa. Sigue en uso, en el número de
+     cada paso de la sección Cómo trabajamos.
 
      Hay dos reglas que esta paleta cumple y que conviene no romper:
 
