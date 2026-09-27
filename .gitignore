@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+.next/
+.output/
+
+.netlify/
+
+.env
+.env.local
+.env.*.local
+
+.DS_Store
+Thumbs.db
+
+*.log
+npm-debug.log*
