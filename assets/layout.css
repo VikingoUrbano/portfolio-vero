@@ -620,8 +620,22 @@ main > section h2 {
   border: 3px solid var(--acento);
 }
 
+/* El texto justificado ocupa todo el ancho de su columna, que es lo que se
+   pidió. Por eso se quitó el max-width que tenía: --ancho-texto son 608 px y
+   la columna del bloque de texto mide 592 px, o sea que hoy el tope no
+   mordía. Pero si --ancho-maximo sube un día, el tope empezaría a cortar el
+   texto antes del borde de la columna y la justificación se notaría justo en
+   ese escalón, que es donde más se ve.
+
+   La partición de palabras no es adorno: un texto justificado sin guiones
+   abre ríos de espacio en blanco, sobre todo en castellano. Firefox usa el
+   diccionario del idioma que declara <html lang>, y las dos páginas lo
+   declaran, así que hyphens: auto parte donde hace falta y las líneas quedan
+   parejo. La última línea de cada párrafo sigue sin justificarse, que en un
+   idioma de izquierda a derecha es lo correcto. */
 .sobre-mi-texto p {
-  max-width: var(--ancho-texto);
+  text-align: justify;
+  hyphens: auto;
   line-height: 1.7;
   margin-block: 0 1.25rem;
 }
