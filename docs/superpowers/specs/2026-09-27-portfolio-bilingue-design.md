@@ -299,7 +299,8 @@ Cálida y formal. Nombre interno: **dirección C**.
 Sin animaciones. Sin modo oscuro. Ambos acordados.
 
 El acento se usa para enlaces, resultados del formulario y elementos de énfasis. El contraste de
-`#0F766E` sobre `#FBF9F6` **se mide** contra 4.5:1 (WCAG AA) antes de usarlo en texto pequeño; no
+`#0F766E` sobre `#FBF9F6` **se mide** contra 4.5:1 (WCAG AA) antes de usarlo en texto pequeño; medido,
+da 5.21:1 y cumple, así que no tiene ninguna restricción de uso; no
 se da por bueno.
 
 ### Tipografías: alojadas en el propio sitio
@@ -542,7 +543,10 @@ biografía completo.
 **Teclado:** recorrido completo con Tab, foco visible siempre, enlace de salto al contenido
 principal.
 
-**Contraste:** medir `#0F766E` sobre `#FBF9F6`; mínimo 4.5:1 para texto normal. Medir también
+**Contraste:** medido, `#0F766E` sobre `#FBF9F6` da 5.21:1 y cumple AA para texto normal, así que el
+acento no tiene restricción de tamaño. El texto `#1F2933` da 14.04:1. Sí hay un borde que no llega:
+`#E4E0DA` da 1.25:1, y como el contorno de un campo de formulario es lo único que delimita el área de
+escritura, los campos usan un token aparte, `--borde-campo: #8A8172`, con 3.66:1. Medir también
 el gris de texto secundario sobre crema, que es el otro par de colores en juego.
 
 **Semántica:** un solo `<h1>` por página, jerarquía de encabezados sin saltos, `<label>`
@@ -581,7 +585,7 @@ primer cliente.
 | Riesgo | Mitigación |
 |---|---|
 | Sin fotos en `recursos/` al momento de maquetar | La sección se compone sin imagen; se agrega después en `assets/img/` |
-| El contraste del acento puede no cumplir AA | Se mide antes de usarlo en texto pequeño; si no llega, se oscurece |
+| El contraste del acento puede no cumplir AA | Ya medido: 5.21:1, cumple AA para texto normal. La prueba `tools/contrast.test.mjs` fija las razones de toda la paleta y falla si alguien cambia un color |
 | La notificación de Netlify Forms sin configurar | Tarea manual de la sección 9, verificada antes de dar por terminado el despliegue |
 | El inglés rompe maquetas ajustadas del español | Pruebas de ambos idiomas con contenido real, no con placeholders |
 | La versión inglesa puede quedar demasiado literal | La revisa y corrige la titular antes de publicar; es el punto de control bloqueante de la sección 4 |

@@ -124,11 +124,13 @@ Expected: FALLA con `Cannot find module .../tools/contrast.mjs`.
 - [ ] **Paso 4: Ejecutar para verificar que pasa**
 
 Run: `node --test tools/contrast.test.mjs`
-Expected: PASA, 14 de 14. Los seis casos de la paleta están en `contrast.test.mjs` porque se escribieron después de medir: fijan las razones de los seis pares para que una deriva de color se detecte sola.
+Expected: PASA, 7 de 7.
 
 - [ ] **Paso 5: Medir la paleta real e informar**
 
 Run: `node --input-type=module -e "import {contrastRatio} from './tools/contrast.mjs'; for (const [a,b,etq] of [['#0F766E','#FBF9F6','acento sobre crema'],['#1F2933','#FBF9F6','texto sobre crema'],['#FFFFFF','#0F766E','blanco sobre acento']]) console.log(etq, contrastRatio(a,b).toFixed(2))"`
+
+Expected, medido:
 
 | par | razón | veredicto |
 |---|---|---|
@@ -139,14 +141,14 @@ Run: `node --input-type=module -e "import {contrastRatio} from './tools/contrast
 | error `#B3261E` sobre crema | 6.22:1 | AA |
 | borde `#E4E0DA` sobre crema | 1.25:1 | **no cumple** |
 
-**El acento sí llega a 4.5:1**, así que se usa en texto de cuerpo y en enlaces sin restricción.
-Este plan daba por hecho lo contrario, y esa suposición iba a costar una regla entera de CSS y tres
-salvedades en la maquetación.
+**El acento sí llega a 4.5:1**, así que se puede usar en texto de cuerpo y en enlaces sin
+restricción. Este plan daba por hecho lo contrario, y esa suposición equivocada iba a costar una
+regla entera de CSS y tres salvedades en la maquetación.
 
 **El borde sí es un problema.** `#E4E0DA` da 1.25:1, y en un campo de formulario el borde es lo
 único que le dice a la persona dónde escribir, así que WCAG 1.4.11 le exige 3:1. El decorativo
 claro sirve para separar secciones, pero no para un área de escritura. Se agrega un token nuevo,
-`--borde-campo: #8A8172`, con 3.66:1.
+`--borde-campo: #8A8172`, que da 3.66:1.
 
 Si la medición real difiere de esta tabla, se registra y se decide antes de escribir el CSS de la
 tarea 3.
@@ -545,9 +547,7 @@ Rejilla de `repeat(auto-fit, minmax(16rem, 1fr))` con `gap: 2rem`. Cada `.servic
 
 - [ ] **Paso 4: El formulario**
 
-`display: grid` con `grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr))` y `gap: 1.25rem`. Los campos 1 y 2 ocupan media fila, el 3 y el 4 también, y el 5 y el 6 ocupan la fila completa con `grid-column: 1 / -1`. Cada etiqueta se muestra en vertical, en 0.875rem, con `color: var(--texto-suave)`. Los campos tienen `padding: 0.7rem 0.9rem`, `border: 1px solid var(--borde-campo)`, `border-radius: 2px` y `background: #FFFFFF`.
-El borde del campo no usa `--borde` a propósito: con 1.25:1 no alcanza el 3:1 que WCAG
-1.4.11 exige para el contorno de un control.
+`display: grid` con `grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr))` y `gap: 1.25rem`. Los campos 1 y 2 ocupan media fila, el 3 y el 4 también, y el 5 y el 6 ocupan la fila completa con `grid-column: 1 / -1`. Cada etiqueta se muestra en vertical, en 0.875rem, con `color: var(--texto-suave)`. Los campos tienen `padding: 0.7rem 0.9rem`, `border: 1px solid var(--borde-campo)`, `border-radius: 2px` y `background: #FFFFFF`. El borde del campo no usa `--borde` a propósito: con 1.25:1 no alcanza el 3:1 que WCAG 1.4.11 exige para el contorno de un control.
 
 ```css
 .trampa {
