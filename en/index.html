@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verónica Ramírez · English and Spanish translator and interpreter</title>
+<meta name="description" content="English and Spanish translator and interpreter, C2 certified by the University of Michigan. General translation, subtitling, localization, technical and scientific texts, sworn translation and interpreting.">
+<link rel="canonical" href="https://veronicaramirez.netlify.app/en/">
+<link rel="alternate" hreflang="es" href="https://veronicaramirez.netlify.app/es/">
+<link rel="alternate" hreflang="en" href="https://veronicaramirez.netlify.app/en/">
+<link rel="alternate" hreflang="x-default" href="https://veronicaramirez.netlify.app/es/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_AR">
+<meta property="og:site_name" content="Verónica Ramírez">
+<meta property="og:title" content="Verónica Ramírez · English and Spanish translator and interpreter">
+<meta property="og:description" content="Translation, subtitling, localization and interpreting between Spanish and English. C2 certified in English by the University of Michigan.">
+<meta property="og:url" content="https://veronicaramirez.netlify.app/en/">
+<meta property="og:image" content="https://veronicaramirez.netlify.app/assets/img/social-en.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/layout.css">
+</head>
+
+<body>
+
+<a class="salto" href="#inicio">Skip to main content</a>
+
+<nav class="barra" aria-label="Main">
+  <div class="barra-interior">
+    <a class="marca" href="#inicio">Verónica Ramírez</a>
+
+    <button class="boton-menu" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="visualmente-oculto">Open the menu</span>
+      <span class="boton-menu-lineas" aria-hidden="true"></span>
+    </button>
+
+    <div class="menu" id="menu">
+      <ul class="menu-lista">
+        <li><a href="#servicios">Services</a></li>
+        <li><a href="#presupuesto">Request a quote</a></li>
+        <li><a href="#sobre-mi">About me</a></li>
+        <li><a href="#credenciales">Credentials</a></li>
+      </ul>
+      <a class="idioma" href="/es/" hreflang="es" lang="es">Español</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<section id="inicio" class="portada">
+  <h1>Verónica Ramírez</h1>
+  <p class="inicio-oficio">English and Spanish translator and interpreter</p>
+
+  <p class="inicio-resumen">Translation, subtitling, localization and interpreting between Spanish
+  and English. C2 certified in English by the University of Michigan, and in the final year of a
+  degree in Literary and Scientific-Technical Translation.</p>
+
+  <p class="inicio-acciones">
+    <a class="boton" href="#presupuesto">Request a quote</a>
+    <a class="enlace-suave" href="mailto:vero22ramm@gmail.com">Email me</a>
+  </p>
+
+  <p class="inicio-lugar">Rosario, Santa Fe, Argentina</p>
+</section>
+
+<section id="servicios">
+  <h2>Services</h2>
+
+  <div class="servicios">
+    <article class="servicio">
+      <h3>General translation</h3>
+      <p>General texts between Spanish and English, edited for style and adapted to the reader:
+      articles, correspondence, marketing copy and documentation.</p>
+    </article>
+
+    <article class="servicio">
+      <h3>Subtitling and localization</h3>
+      <p>Video subtitling and localization of audiovisual and digital content, with timing,
+      consistent tone and adapted cultural references.</p>
+    </article>
+
+    <article class="servicio">
+      <h3>Technical and scientific translation</h3>
+      <p>Technical, scientific and research documents, with terminology research and consistent
+      sector vocabulary throughout.</p>
+    </article>
+
+    <article class="servicio">
+      <h3>Sworn translation</h3>
+      <p>Sworn translations for the legal, academic and administrative proceedings that require
+      them.</p>
+    </article>
+
+    <article class="servicio">
+      <h3>Interpreting</h3>
+      <p>Simultaneous and consecutive interpreting in Spanish and English.</p>
+    </article>
+  </div>
+</section>
+
+<section id="presupuesto">
+  <h2>Request a quote</h2>
+
+  <p class="seccion-intro">Tell me what you need and I&rsquo;ll reply with a quote within two
+  business days. Fields marked with an asterisk are required; volume and deadline are
+  optional.</p>
+
+  <!-- The trap field is deliberately first, with four protections at once: no
+       autocomplete, out of the tab order, hidden from assistive technology and
+       zero-sized. A browser autofill that fills a honeypot makes Netlify
+       discard the submission whole, and that takes a real client with it, not
+       a bot. -->
+  <p class="trampa" aria-hidden="true">
+    <label for="sitio-web">Do not fill in this field</label>
+    <input type="text" id="sitio-web" name="sitio-web" tabindex="-1" autocomplete="off">
+  </p>
+
+  <form name="presupuesto"
+        method="POST"
+        action="/en/confirmation.html"
+        data-netlify="true"
+        netlify-honeypot="sitio-web"
+        id="formulario">
+
+    <input type="hidden" name="form-name" value="presupuesto">
+    <input type="hidden" name="idioma" value="en">
+
+    <div class="campo">
+      <label for="nombre">Name <span class="obligatorio" aria-hidden="true">*</span></label>
+      <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+    </div>
+
+    <div class="campo">
+      <label for="email">Email <span class="obligatorio" aria-hidden="true">*</span></label>
+      <input type="email" id="email" name="email" autocomplete="email" required>
+    </div>
+
+    <div class="campo">
+      <label for="servicio">Service <span class="obligatorio" aria-hidden="true">*</span></label>
+      <select id="servicio" name="servicio" required>
+        <option value="" disabled selected>Choose a service</option>
+        <option value="general">General translation</option>
+        <option value="subtitulado">Subtitling and localization</option>
+        <option value="tecnica">Technical and scientific translation</option>
+        <option value="jurada">Sworn translation</option>
+        <option value="interpretacion">Interpreting</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="volumen">Approximate volume <span class="opcional">(optional)</span></label>
+      <select id="volumen" name="volumen">
+        <option value="" selected>Not specified</option>
+        <option value="hasta-1000">Up to 1,000 words</option>
+        <option value="1000-5000">1,000 to 5,000 words</option>
+        <option value="5000-20000">5,000 to 20,000 words</option>
+        <option value="20000-100000">20,000 to 100,000 words</option>
+        <option value="mas-100000">Over 100,000 words</option>
+        <option value="no-se">Not sure yet</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="fecha">Deadline <span class="opcional">(optional)</span></label>
+      <input type="date" id="fecha" name="fecha">
+    </div>
+
+    <div class="campo campo-ancho">
+      <label for="comentarios">Comments <span class="opcional">(optional)</span></label>
+      <textarea id="comentarios" name="comentarios" rows="6"
+                placeholder="Context, deadlines, source file format, anything else I should know."></textarea>
+    </div>
+
+    <div class="envio">
+      <button type="submit" class="boton">Send request</button>
+      <p class="form-estado" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+</section>
+
+<section id="sobre-mi">
+  <h2>About me</h2>
+
+  <figure class="retrato">
+    <img src="/assets/img/veronica-400.jpg"
+         alt="Verónica Ramírez"
+         width="400" height="400"
+         loading="lazy" decoding="async">
+  </figure>
+
+  <div class="sobre-mi-texto">
+    <p>I'm a translator and interpreter working between Spanish and English. I'm in the fourth and
+    final year of a degree in Literary and Scientific-Technical Translation at the Instituto
+    Belgrano, and I hold a C2 certification in English from the University of Michigan.</p>
+
+    <p>Before moving into translation I spent six years studying American English at A.R.I.C.A.N.A.,
+    and a year teaching English to native Spanish speakers. Teaching taught me something that still
+    shows in the work: a translation isn't clear because it's well written, it's clear because
+    someone can actually use it.</p>
+
+    <p>I care about languages because of the bridge they build between cultures. Translating isn't
+    swapping one word for another &mdash; it's getting a text to mean the same thing to someone
+    else, in a different context. That's the job.</p>
+  </div>
+</section>
+
+<section id="credenciales">
+  <h2>Credentials</h2>
+
+  <div class="credenciales">
+
+    <div class="credencial">
+      <h3>Certifications</h3>
+      <dl>
+        <dt>ECPE &middot; C2 in English</dt>
+        <dd>University of Michigan &middot; December 2024 &ndash; February 2025</dd>
+
+        <dt>ECCE &middot; C1 in English</dt>
+        <dd>University of Michigan &middot; December 2023 &ndash; February 2024</dd>
+      </dl>
+    </div>
+
+    <div class="credencial credencial-en-curso">
+      <h3>Education</h3>
+      <p class="en-curso">In progress, completing December 2026</p>
+      <dl>
+        <dt>Degree in Literary and Scientific-Technical Translation</dt>
+        <dd>Instituto Belgrano &middot; fourth and final year &middot; completes December 2026</dd>
+      </dl>
+
+      <dl>
+        <dt>German &middot; A1</dt>
+        <dd>Ikaruga School of Languages</dd>
+
+        <dt>American English course</dt>
+        <dd>A.R.I.C.A.N.A. &middot; 2007 &ndash; 2013</dd>
+      </dl>
+    </div>
+
+    <div class="credencial">
+      <h3>Experience</h3>
+      <dl>
+        <dt>English teacher</dt>
+        <dd>Alianza &middot; January &ndash; December 2024</dd>
+        <dd class="detalle">Taught English adapted to native Spanish speakers across age groups,
+        planned personalized programs from A1 to B2 under the CEFR, and tracked each student's
+        progress.</dd>
+      </dl>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer id="contacto">
+  <div class="pie-interior">
+    <p class="pie-contacto">
+      <a href="mailto:vero22ramm@gmail.com">vero22ramm@gmail.com</a><br>
+      <a href="tel:+543417180942">341 718-0942</a><br>
+      <a href="https://www.linkedin.com/in/veronica-p-ramirez" rel="noopener" target="_blank">LinkedIn</a>
+    </p>
+    <p class="pie-lugar">Rosario, Santa Fe, Argentina</p>
+    <p class="pie-legal">Verónica Ramírez &middot; English and Spanish translator and
+    interpreter</p>
+  </div>
+</footer>
+
+<script src="/assets/main.js" defer></script>
+</body>
+</html>
