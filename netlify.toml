@@ -11,6 +11,16 @@
 # veronicaramirez.netlify.app/docs/ y .netlify.app/plan a cualquiera que
 # escribiera la direccion, con el texto del proceso interno dentro.
 #
+# netlify.toml NO esta en la lista, y hay que entender por que. Se probo
+# borrarlo y las cuatro cabeceras de seguridad desaparecieron del sitio
+# entero: ninguna ruta las recibia y la cache volvia al valor por defecto de
+# Netlify. La razon es que este archivo es a la vez configuracion y directorio
+# de publicacion, y Netlify lo relee en el post-procesamiento del despliegue,
+# que corre despues del build. Borrarlo aqui no es borrar un archivo
+# sobrante: es borrar las reglas que el despliegue de hace un momento
+# estaba a punto de aplicar. Son 3,5 KB de nombres de cabecera y valores de
+# cache, ningun secreto, y se pueden dejar a la vista sin riesgo.
+#
 # Este comentario decia antes que poner un comando obligaria a instalar
 # dependencias, y era falso: sin package.json, Netlify no instala nada y el
 # rm se ejecuta tal cual en Bash. Lo que si cuesta algo es un paso de build
@@ -18,7 +28,7 @@
 
 [build]
   publish = "."
-  command = "rm -rf docs tools README.md .gitignore netlify.toml"
+  command = "rm -rf docs tools README.md .gitignore"
 
 # --------------------------------------------------------------------------
 # Cabeceras de seguridad
