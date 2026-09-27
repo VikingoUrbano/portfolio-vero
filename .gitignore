@@ -27,3 +27,4 @@ npm-debug.log*
 ff-perfil-verif-*/
 tools/capturas/
 plan
+plan-*.md

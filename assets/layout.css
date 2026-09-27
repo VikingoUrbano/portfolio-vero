@@ -20,24 +20,18 @@
    Contenedor y secciones
    -------------------------------------------------------------------------- */
 
-/* Estas tres reglas existían separadas: .barra-interior y .pie-interior
-   acotaban su ancho a --ancho-maximo y se centraban, pero las secciones de
-   <main> no tenían nada de eso. El resultado era una barra y un pie centrados
-   a 1088 px con el contenido de en medio ocupando la pantalla entera, y en un
-   monitor de 2560 px la desalineación entre la barra y el texto llegó a medir
-   736 px a cada lado. La clase .contenedor de arriba está definida desde el
-   principio y nunca se aplicó a nada; el sitio se construía sin ella.
+/* Antes estas reglas vivían en tres sitios distintos: .barra-interior y
+   .pie-interior acotaban su ancho a --ancho-maximo y se centraban, pero las
+   secciones de <main> no tenían nada de eso. El resultado era una barra y un
+   pie centrados a 1088 px con el contenido de en medio ocupando la pantalla
+   entera, y en un monitor de 2560 px la desalineación entre la barra y el
+   texto llegó a medir 736 px a cada lado.
 
-   Las secciones se acotan aquí directamente, y por eso .contenedor no se usa
-   en ninguna parte del HTML. Si alguna vez hace falta, se borra de aquí para
-   que no queden dos reglas diciendo lo mismo. */
-.contenedor {
-  width: 100%;
-  max-width: var(--ancho-maximo);
-  margin-inline: auto;
-  padding-inline: clamp(1.25rem, 5vw, 3rem);
-}
-
+  Había además una clase .contenedor con exactamente estas cuatro
+   propiedades, escrita desde el principio y aplicada a cero elementos: el
+   sitio se construía sin ningún contenedor. Las secciones se acotan aquí
+   directamente y la clase se borró, para que no queden dos reglas diciendo
+   lo mismo. */
 main > section {
   width: 100%;
   max-width: var(--ancho-maximo);
@@ -46,8 +40,31 @@ main > section {
   padding-block: clamp(3rem, 8vw, 6rem);
 }
 
+/* El separador entre secciones va a lo ancho de la ventana y no a lo ancho de
+   la caja de contenido. Por eso no puede ser un border-top de la sección: la
+   sección está acotada a 960 px, y un border dibujaría una raya de 960 px
+   flotando en el centro en vez de una línea que parte la página.
+
+   El pseudo-elemento repite la cuenta del friso de la cabecera: se sale los
+   mismos 50vw a cada lado. El recorte horizontal de main es lo que evita
+   que la barra de desplazamiento del navegador, que va dentro de vw, haga
+   aparecer una barra horizontal. Va en main y no en html o body a propósito:
+   la barra de navegación es sticky y es hermana de main, así que no la
+   toca. */
+main {
+  overflow-x: clip;
+}
+
 main > section + section {
-  border-top: 1px solid var(--borde);
+  position: relative;
+}
+
+main > section + section::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: calc(50% - 50vw);
+  border-top: 1px solid var(--borde-fino);
 }
 
 main > section h2 {
@@ -327,8 +344,15 @@ main > section h2 {
    contenido: con eso, un texto largo sin cortes ensancha la pista entera
    y overflow-wrap no llega a actuar, porque la caja ya es ancha. Con el
    minimo en cero, el corte de linea ocurre dentro de la pista. */
+/* El friso va ahora PRIMERO dentro de la portada, pegado al borde superior de
+   la ventana, y por eso el relleno de arriba se pasa abajo. Con el relleno
+   arriba, la foto quedaba separada de la barra de navegación por un margen
+   vacío que la dejaba flotando en lugar de coronar la página.
+
+   El hueco de 2rem del grid es lo que separa el friso del nombre, así que no
+   hace falta ningún margen a mano. */
 .portada {
-  padding-block: clamp(3rem, 9vw, 5.5rem) 0;
+  padding-block: 0 clamp(3rem, 9vw, 5.5rem);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 2rem;
@@ -372,10 +396,17 @@ main > section h2 {
 /* La franja panorámica va a ancho completo de la ventana, no del contenedor:
    es lo que da el aire de la primera pantalla. object-fit: cover recorta
    para no deformar, y el alto se fija con clamp para que en el móvil siga
-   siendo una franja y no se convierta en un bloque cuadrado. */
+   siendo una franja y no se convierta en un bloque cuadrado.
+
+   El filete es un borde de los cuatro lados, no solo de abajo. La foto es tan
+   oscura que sin él el friso se pierde en la base; con el, se lee como una
+   banda. Y como el ancho de este elemento da exactamente el de la ventana,
+   un borde de 1 px no lo ensancha: box-sizing es border-box en todo el
+   documento, así que el borde va por dentro. */
 .portada-franja {
   grid-column: 1 / -1;
   margin: 0 calc(50% - 50vw);
+  border: 1px solid var(--borde-franja);
 }
 
 .portada-franja img {
@@ -392,15 +423,25 @@ main > section h2 {
 .servicios {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 2rem;
+  gap: 1.25rem;
 }
 
+/* Antes esto era una lista sobria: un borde inferior de 2 px en el acento y
+   nada más, sin fondo, sin sombra, sin esquinas. Sobre papel claro era lo
+   correcto, porque el peso lo ponía el bloque de papel y una tarjeta encima
+   solo lo tapaba.
+
+   Sobre fondo oscuro el argumento se da vuelta: la página entera es una sola
+   masa de #283142 y no hay ningun plano que dé la jerarquía. La tarjeta pasa
+   a ser lo que la dibuja, y por eso sube un escalón de superficie
+   (--fondo-campo) y se apoya en un filete. El borde de acento pasa de abajo
+   a arriba, que es donde se lee primero. */
 .servicio {
-  /* El borde inferior de 2 px en el acento marca el servicio sin necesidad de
-     una tarjeta con fondo, sombra ni esquinas: la dirección es sobria y las
-     tres cosas quitan peso. */
-  border-bottom: 2px solid var(--acento);
-  padding-bottom: 1.25rem;
+  background: var(--fondo-campo);
+  border: 1px solid var(--borde-fino);
+  border-top: 2px solid var(--acento);
+  border-radius: 3px;
+  padding: 1.5rem 1.5rem 1.35rem;
 }
 
 .servicio h3 {
@@ -417,6 +458,7 @@ main > section h2 {
 @media (min-width: 48rem) {
   .servicios {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
   }
 }
 
@@ -584,6 +626,29 @@ main > section h2 {
   margin-block: 0 1.25rem;
 }
 
+/* La segunda foto ocupa el ancho entero de la sección y va debajo de los dos
+   bloques de arriba, que se quedan en la retícula de 14rem + texto.
+
+   Va al final y no al principio a propósito: el retrato circular es lo que
+   identifica a la persona, y la foto grande es contexto. Puesta delante
+   obligaba a saltar el texto para llegar a la cara.
+
+   La proporción sale de la foto misma (1600 x 777) y no de un 16:9 de vídeo,
+   que recortaría por arriba y por abajo justo lo que hay en el centro: el
+   marco de la puerta. */
+.sobre-mi-foto {
+  margin: 0;
+  grid-column: 1 / -1;
+}
+
+.sobre-mi-foto img {
+  width: 100%;
+  aspect-ratio: 1600 / 777;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--borde-fino);
+}
+
 @media (min-width: 48rem) {
   #sobre-mi {
     grid-template-columns: 14rem minmax(0, 1fr);
@@ -594,42 +659,108 @@ main > section h2 {
    Credenciales
    -------------------------------------------------------------------------- */
 
-.credenciales {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2.5rem;
+/* Esto era una rejilla de tres tarjetas (Certificaciones, Formación,
+   Experiencia) y ahora es una línea de tiempo vertical. El cambio no es de
+   gusto: las credenciales tienen fecha, y seis entradas fechadas ordenadas en
+   el tiempo se leen de una sola pasada, mientras que en tres bloques quien las
+   leía tenía que juntar las fechas por su cuenta.
+
+   Es una <ol> y no una <div> por lo mismo: el orden es el contenido, no el
+   aspecto. Y cada entrada lleva su periodo en pantalla antes que el título,
+   que es como se lee un currículum. */
+.linea-tiempo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  /* Más estrecha que la caja de 60rem a propósito: una línea de tiempo es una
+     sola columna de texto, y a 960 px las líneas se hacen largas. */
+  max-width: 42rem;
 }
 
-.credencial h3 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+.linea-tiempo::before {
+  content: "";
+  position: absolute;
+  inset-block: 0.55rem 0.55rem;
+  /* La línea tiene que pasar por el centro del punto, y el punto va pegado al
+     borde de entrada con 14 px de ancho y 2 px de borde. */
+  inset-inline-start: 0.4375rem;
+  width: 1px;
+  background: var(--borde-fino);
 }
 
-.credencial dl {
-  margin: 0 0 1.25rem;
+.hito {
+  position: relative;
+  padding-inline-start: 2.25rem;
+  padding-block-end: 2rem;
 }
 
-.credencial dl:last-child {
-  margin-bottom: 0;
+.hito:last-child {
+  padding-block-end: 0;
 }
 
-.credencial dt {
+/* El punto de cada entrada. Relleno con el color del fondo, no con el acento:
+   un disco de color sólido sobre fondo oscuro pesa más que la línea que
+   une las entradas, y lo que tiene que destacar es la cronología. */
+.hito::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.4rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background: var(--fondo);
+  border: 2px solid var(--acento);
+}
+
+/* La entrada que está en curso lleva el punto relleno y en el durazno. Es la
+   única diferencia visual que recibe, y con eso basta: el sitio ya dice
+   "en curso" en un rótulo al lado del título, y una etiqueta de aviso
+   sugeriría un problema donde lo que hay es una fecha. */
+.hito-en-curso::before {
+  background: var(--acento-arena);
+  border-color: var(--acento-arena);
+}
+
+.hito-periodo {
+  margin-block: 0 0.35rem;
+  font-size: 0.8125rem;
   font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--acento-arena);
 }
 
-.credencial dd {
-  margin: 0 0 0.75rem;
-  color: var(--texto-suave);
+.hito-titulo {
+  font-size: 1.25rem;
+  margin-block: 0 0.25rem;
+}
+
+.hito-lugar {
+  margin-block: 0;
   font-size: 0.9375rem;
+  color: var(--texto-suave);
 }
 
-.credencial dd:last-child {
-  margin-bottom: 0;
+.hito-detalle {
+  margin-block: 0.75rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--texto-suave);
+  max-width: 38rem;
 }
 
-.credencial .detalle {
-  max-width: 34rem;
-  margin-top: 0.35rem;
+/* El rótulo "en curso" va después del lugar y no antes del título: la fecha ya
+   dice que sigue abierta, así que el rótulo es una confirmación, no el dato
+   principal. Y anula el margen inferior que trae .en-curso suelto, porque
+   dentro de una entrada no tiene que separar nada de lo que viene después. */
+.hito-nota {
+  margin-block: 0.7rem 0 0;
+}
+
+.hito-nota .en-curso {
+  margin-block: 0;
 }
 
 .en-curso {
@@ -638,43 +769,81 @@ main > section h2 {
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--acento);
-  border: 1px solid var(--acento);
+  color: var(--acento-arena);
+  border: 1px solid var(--acento-arena);
   border-radius: 2px;
   padding: 0.2rem 0.55rem;
   margin-block: 0 1rem;
 }
 
-/* El Traductorado es el único bloque en curso, y un margen lateral lo
-   distingue sin necesidad de una etiqueta de advertencia, que sugeriría un
-   problema donde lo que hay es una fecha. */
-.credencial-en-curso {
-  border-left: 3px solid var(--acento);
-  padding-left: 1.25rem;
+/* --------------------------------------------------------------------------
+   Cómo trabajar conmigo
+
+   Los tres textos son un borrador y están para que ella los cambie. Lo único
+   que no está inventado es el plazo: dos días hábiles ya salen en la
+   introducción del formulario y en su mensaje de éxito, así que repetirlo
+   aquí no añade un dato nuevo.
+   -------------------------------------------------------------------------- */
+
+/* Los pasos van en tres columnas a partir de 48rem, y eso deja 267 px de
+   columna dentro de la caja de 60rem. Por eso el número va en su propia
+   línea y no al lado del título: puesto al lado, el texto se quedaría con
+   219 px y "Te respondo con un presupuesto cerrado" ocuparía cinco líneas. */
+.pasos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  counter-reset: paso;
+}
+
+.paso {
+  counter-increment: paso;
+  background: var(--fondo-campo);
+  border: 1px solid var(--borde-fino);
+  border-radius: 3px;
+  padding: 1.5rem;
+}
+
+.paso-numero {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-block-end: 0.9rem;
+  border-radius: 50%;
+  border: 1px solid var(--acento-verde);
+  color: var(--acento-verde);
+  font-family: var(--serif);
+  font-variation-settings: var(--fraunces-axes);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* El número sale de un contador y no de un <ol type="1">, que en el DOM es un
+   "1." con punto y no se puede estiloar sin ::marker. El orden lo sigue
+   el orden lo sigue siendo el del propio <ol>, así que un lector
+.paso-numero::before {
+  content: counter(paso);
+}
+
+.paso h3 {
+  font-size: 1.1875rem;
+  margin-block: 0 0.5rem;
+}
+
+.paso p {
+  margin-block: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--texto-suave);
 }
 
 @media (min-width: 48rem) {
-  /* Tres columnas quedaban estrechas dentro de la caja de 60rem: 267 px para
-     un rótulo como "Traductorado Público, Literario y Científico-Técnico de
-     Inglés" es partirlo en cinco líneas. Con dos columnas cada bloque dispone
-     de 416 px, y el de experiencia, que es el único con una descripción
-     larga, se queda con la fila entera. */
-  .credenciales {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2rem;
-  }
-
-  .credencial:last-child {
-    grid-column: 1 / -1;
-  }
-
-  /* El rótulo de cada credencial apila la línea gruesa sobre la fecha en
-     lugar de ponerlas en fila, porque en una columna estrecha se leen mejor
-     apiladas. */
-  .credencial dt {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.15rem;
+  .pasos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -682,8 +851,11 @@ main > section h2 {
    Pie
    -------------------------------------------------------------------------- */
 
+/* El pie lleva filete y no el borde entero: separa el final del contenido pero
+   no es un elemento fijo por el que pasa nada, así que no tiene por qué
+   destacar como el de la barra de navegación. */
 footer {
-  border-top: 1px solid var(--borde);
+  border-top: 1px solid var(--borde-fino);
   background: var(--fondo-campo);
   padding-block: clamp(2.5rem, 6vw, 4rem);
 }

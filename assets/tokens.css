@@ -80,15 +80,56 @@
 
 :root {
   /* Colores verificados por tools/contrast.test.mjs. Si se cambia alguno, esa
-     suite falla y dice cuánto se movió la razón de contraste. */
-  --fondo: #FBF9F6;
-  --fondo-campo: #FFFFFF;
-  --texto: #1F2933;
-  --texto-suave: #52606D;
-  --acento: #0F766E;
-  --error: #B3261E;
-  --borde: #E4E0DA;
-  --borde-campo: #8A8172;
+     suite falla y dice cuánto se movió la razón de contraste.
+
+     El sitio es oscuro de arriba abajo, sin modo claro ni conmutador. Los tres
+     acentos pastel no son una decisión de gusto: se midieron sobre las tres
+     fotos propias para sacar de ahí los colores, en vez de inventarlos. El
+     verde salvia sale del retrato, el azul cielo de la franja de la cabecera y
+     el durazno de la piel y de la arena de la foto de la puerta.
+
+     Hay dos reglas que esta paleta cumple y que conviene no romper:
+
+     Uno. Todo color que se use como texto tiene que pasar 4.5:1 contra las
+     TRES superficies, no solo contra el fondo. Un acento puesto de pie sobre
+     la superficie más clara daba 4.23:1 y fallaba dentro de una tarjeta, así
+     que el azul del acento es #8FC0D4 y no el #7FB3C8 de la foto, que es más
+     apagado. La diferencia se nota poco y evita un fallo de contraste que solo
+     aparecería en algunos sitio de la página.
+
+     Dos. --apagado no llega a 4.5:1 en ninguna superficie y está aquí para
+     cosas de adorno, no de texto: separadores, el número de un paso, una
+     marca de agua. Si alguna vez hace falta escribir con él, el fallo sale en
+     la suite de contraste. */
+  --fondo: #283142;
+  --fondo-campo: #2E3849;
+  --fondo-alto: #39455A;
+
+  --texto: #E8ECF2;
+  --texto-suave: #A8B3C4;
+
+  --acento: #8FC0D4;
+  --acento-verde: #9DC48A;
+  --acento-arena: #E3B8A0;
+  --apagado: #5C7FA3;
+
+  /* El texto que va sobre un relleno pastel. Es oscuro y no blanco: el boton
+     lleva el acento de fondo, y el blanco sobre un pastel da cerca de 2:1.
+     Este da 6.87:1 sobre el azul, 8.00 sobre el verde y 8.69 sobre el durazno. */
+  --sobre-acento: #1C2333;
+
+  --error: #F2A9A2;
+  --borde: #8E9BB0;
+  --borde-fino: rgba(142, 155, 176, 0.25);
+  --borde-campo: #8E9BB0;
+
+  /* El filete del friso de la cabecera. La foto de la franja es casi del mismo
+     color que la base: por canal esta a 4/255 de #283142, y su contraste
+     contra el fondo es de 1.03 a 1.22 contra 1.0. Es decir, que se ve. Este
+     borde es lo único que la delimita, y por eso es el color exacto de la
+     propia foto y no un gris de la paleta: 25% basta para que se lea el
+     contorno sin que llame la atención. */
+  --borde-franja: rgba(127, 179, 200, 0.25);
 
   /* El ancho de la caja de contenido, no el de la ventana. 60rem son 960 px:
      es el ancho al que el contenido deja de necesitar más aire lateral y

@@ -119,6 +119,46 @@ function revisarDocumento(ruta) {
       .map((l) => l.getAttribute("hreflang"));
     ok(p("declara es, en y x-default"),
        ["es", "en", "x-default"].every((x) => alts.includes(x)), alts.join(","));
+
+    // El orden de las secciones es una decision de contenido, no un detalle:
+    // quien llega desde un buscador o desde un enlace compartido aterriza en
+    // una de ellas, y tiene que encontrar lo que busca donde lo puso.
+    const orden = [].slice.call(d.querySelectorAll("main > section"))
+      .map((s) => s.id);
+    ok(p("las secciones van en el orden previsto"),
+       orden.join(",") === "inicio,servicios,credenciales,sobre-mi,como-trabajo,presupuesto",
+       orden.join(","));
+
+    // La franja tiene que abrir la portada, no cerrarla. Con la foto al final,
+    // la primera pantalla era el nombre solo y la foto quedaba debajo de todo.
+    const inicio = d.querySelector("#inicio");
+    const primero = inicio && inicio.firstElementChild;
+    ok(p("la franja abre la portada"),
+       !!primero && primero.classList.contains("portada-franja"),
+       primero ? primero.className || primero.tagName : "(vacio)");
+
+    // Las dos fotos decorativas llevan alt vacio a proposito: el retrato
+    // circular ya identifica a la persona y la foto de la puerta no dice
+    // nada que el texto no diga. Un alt descriptivo seria redundante.
+    const decorativas = [].slice.call(d.querySelectorAll(
+      ".portada-franja img, .sobre-mi-foto img"));
+    ok(p("las fotos decorativas tienen alt vacio"),
+       decorativas.length === 2 && decorativas.every((i) => i.getAttribute("alt") === ""),
+       decorativas.length + " encontradas");
+
+    // El portfolio no existe, asi que la unica prueba de calidad es la linea
+    // de tiempo. Se comprueba que las seis entradas sigan ahii y fechadas: si
+    // alguien las reordena o las deja en tres bloques, el sitio pierde
+    // justamente lo que no puede sustituir con otra cosa.
+    const hitos = [].slice.call(d.querySelectorAll(".linea-tiempo .hito"));
+    ok(p("seis entradas en la linea de tiempo"), hitos.length === 6, String(hitos.length));
+    ok(p("cada entrada tiene periodo y titulo"),
+       hitos.every((h) => h.querySelector(".hito-periodo") && h.querySelector(".hito-titulo")));
+    ok(p("las entradas van de la mas reciente a la mas antigua"),
+       hitos.length === 6 &&
+       hitos.filter((h) => h.classList.contains("hito-en-curso")).length === 1 &&
+       hitos[0].classList.contains("hito-en-curso"),
+       "la que esta en curso tiene que ir la primera");
   }
 
   const refs = [].slice.call(d.querySelectorAll("[href],[src]"))
@@ -152,6 +192,41 @@ function revisarMaqueta(marco, ancho, ruta) {
   ok(p("ningun elemento se sale del viewport"), fuera.length === 0, fuera.join("; "));
 
   ok(p("la pagina renderiza contenido"), raiz.scrollHeight > 400, String(raiz.scrollHeight));
+
+  // El fallo que motivó este arreglo: la barra y el pie se acotaban a
+  // --ancho-maximo y se centraban, pero las secciones de <main> no tenian
+  // nada de eso y ocupaban la pantalla entera. En un monitor de 2560 px eso
+  // eran 736 px de desalineacion entre la cabecera y el texto. Las pruebas
+  // no lo detectaron porque nunca se paso de 1440 px, donde la diferencia
+  // es de 176 px y pasa desapercibida.
+  const barra = doc.querySelector(".barra-interior");
+  const secciones = [].slice.call(doc.querySelectorAll("main > section"));
+  if (barra && secciones.length) {
+    const izquierdaBarra = Math.round(barra.getBoundingClientRect().left);
+    const descuadres = secciones
+      .map((s) => ({
+        id: s.id,
+        delta: Math.round(s.getBoundingClientRect().left) - izquierdaBarra,
+      }))
+      .filter((s) => Math.abs(s.delta) > 1);
+    ok(p("las secciones alinean con la barra"),
+       descuadres.length === 0,
+       descuadres.length
+         ? descuadres.map((s) => s.id + " " + s.delta + "px").join(", ")
+         : "todas a " + izquierdaBarra + "px");
+  }
+
+  // La franja es lo unico a sangre completa, y tiene que llegar a los dos
+  // cantos de la ventana. Si el recorte de main se queda corto, se ve como
+  // una banda de 960 px flotando en el centro.
+  const franja = doc.querySelector(".portada-franja");
+  if (franja) {
+    const caja = franja.getBoundingClientRect();
+    ok(p("la franja ocupa toda la ventana"),
+       caja.left <= 1 && caja.right >= ancho - 1,
+       "izquierda " + Math.round(caja.left) + "px, derecha " + Math.round(caja.right) +
+       "px, ventana " + ancho + "px");
+  }
 }
 
 window.addEventListener("load", function () {
