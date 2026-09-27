@@ -137,7 +137,7 @@ main > section h2 {
   font-family: var(--serif);
   font-variation-settings: var(--fraunces-axes);
   font-weight: 600;
-  font-size: 1.125rem;
+  font-size: 1.3rem;
   color: var(--texto);
   text-decoration: none;
   margin-right: auto;
@@ -157,12 +157,15 @@ main > section h2 {
   padding: 0;
 }
 
+/* 1.075rem es un 15 % más que los 0.9375rem que había, que era lo pedido.
+   Los dos tamaños suben en la misma proporción para que la marca y los enlaces
+   guarden la diferencia de jerarquía que tenían. */
 .menu-lista a,
 .idioma {
   color: var(--texto);
   text-decoration: underline;
   text-underline-offset: 0.2em;
-  font-size: 0.9375rem;
+  font-size: 1.075rem;
 }
 
 .idioma {
@@ -277,9 +280,14 @@ main > section h2 {
     padding-block: 0;
   }
 
+  /* El hueco entre enlaces baja de 1.25rem a 1rem, y no por gusto: al
+     engordar la letra un 15 %, la barra en castellano queda a 3 px de pasarse
+     de los 864 px de la caja de 60rem, con lo que el menu se partiría en dos
+     filas. Cuatro píxeles menos de separación por enlace dan 16 px de aire y
+     no se notan. */
   .menu-lista {
     flex-direction: row;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
   .idioma {
