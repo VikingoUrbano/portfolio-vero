@@ -162,7 +162,6 @@ Migrar a Astro más adelante es trivial. Migrar desde Astro a HTML plano, no.
 portfolio-vero/
 ├── index.html                  selector de idioma + detección
 ├── favicon.svg
-├── favicon.ico
 ├── netlify.toml
 ├── sitemap.xml
 ├── robots.txt
@@ -327,12 +326,22 @@ repositorio es de unos cientos de kilobytes.
 El sitio se comparte por LinkedIn, y ahí es donde se ve la primera impresión. Cada página declara
 Open Graph y Twitter Card: `og:title`, `og:description`, `og:type`, `og:url`, `og:locale`,
 `og:site_name` y `og:image` con una imagen social de 1200 × 630 en `assets/img/`. Sin eso, un
-enlace pegado en un chat o en LinkedIn se muestra como una URL desnuda.
+enlace pegado en un chat o en LinkedIn se muestra como una URL desnuda. Hay dos, una por
+idioma: `social-es.png` y `social-en.png`.
+
+La imagen social **se genera, no se diseña a mano en un editor gráfico**: es una página HTML de
+1200 × 630 con la misma tipografía, los mismos colores y el mismo nombre de la portada, que
+Chrome headless captura como PNG. Así el aspecto de la tarjeta no se desincroniza del sitio, que
+es el problema real de las imágenes sociales hechas a mano.
 
 `og:locale` es `es_AR` en la versión española y `en_US` en la inglesa. La variedad estadounidense
 no es arbitraria: tanto los exámenes ECPE y ECCE de University of Michigan como el curso de
 A.R.I.C.A.N.A. son de inglés americano, así que la versión inglesa se redacta en esa variedad y
 no se mezcla con recursos de inglés británico.
+
+**Favicon en SVG solamente.** Sin `favicon.ico`: no hay herramienta para generarlo y el soporte
+de los favicon SVG es prácticamente universal. El SVG declara el color de fondo del sitio, para
+que no se vea un cuadrado transparente en la barra de pestanñas.
 
 ## 8. Orden de secciones
 
@@ -494,9 +503,15 @@ se puede sacar. Sin descarga no hay nada que revertir. La sección Credenciales 
 Las fotos que el sitio usa sí tienen que estar versionadas: Netlify compila desde GitHub, y lo
 que no está en el repositorio no se sirve. Por eso viven en `assets/img/`, no en `recursos/`.
 
-Formato de publicación: WebP con respaldo JPEG, `width` y `height` explícitos en el marcado para
-evitar desplazamiento de maquetación, y `loading="lazy"` en todo lo que esté bajo el primer
-pliegue.
+Formato de publicación: **JPEG, sin conversión.** Ninguna herramienta de imagen está disponible
+en el entorno de trabajo, y no se instala una cadena de conversión para dos archivos que suman
+106 KB: WebP ahorraría unos 30 KB a cambio de una dependencia de compilación en un disco lento.
+Se publican tal cual, con `width` y `height` explícitos en el marcado para evitar desplazamiento
+de maquetación, y `loading="lazy"` en todo lo que esté bajo el primer pliegue. La fotografía
+principal va con `fetchpriority="high"`, porque está en el primer pliegue.
+
+Verificado: ninguna de las dos fotos tiene bloque EXIF ni coordenadas GPS, así que no hay datos
+de ubicación que filtrar al publicarlas.
 
 ### Fotos disponibles al comienzo de la implementación
 
