@@ -109,7 +109,23 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
+}
+
+/* El desplazamiento suave es un efecto de movimiento, y hay una trampa: la
+   propiedad scroll-behavior NO respeta prefers-reduced-motion por su cuenta.
+   Puesta aqui sin más, el sitio se mueve para todo el mundo, incluido quien
+   tiene activado "reducir el movimiento" en el sistema por sensibilidad
+   vestibular o por una migraña.
+
+   Por eso va dentro de una consulta que solo se cumple si el sistema NO pide
+   menos movimiento. Quien lo pide recibe un salto seco de un clic al ancla, y
+   el resto recibe el comportamiento más agradable. La alternativa sería no
+   tenerlo en absoluto, que también es defendible: el sitio tiene siete enlaces
+   a secciones, que es exactamente donde un salto largo se nota. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {

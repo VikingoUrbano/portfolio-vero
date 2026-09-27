@@ -1,12 +1,24 @@
 # Sitio de Verónica Ramírez — traduccion e interpretacion
 #
-# No hay paso de compilacion: el sitio es HTML y CSS escritos a mano, y la
-# publicacion es el mismo repositorio. Anadir un comando de build aqui
-# obligaria a instalar dependencias en cada despliegue para no ganar nada.
+# El sitio es HTML y CSS escritos a mano. No hay framework, no hay
+# package.json y no hay paso de compilacion: la publicacion es el mismo
+# repositorio.
+#
+# El unico comando de build es un rm, y esta a proposito. Con publish = "."
+# Netlify sube TODO lo que hay en el repositorio, y en el repositorio hay
+# cosas que no son el sitio: la especificacion, el plan de trabajo y las
+# herramientas de verificacion. Sin este rm, docs/plan serian accesibles en
+# veronicaramirez.netlify.app/docs/ y .netlify.app/plan a cualquiera que
+# escribiera la direccion, con el texto del proceso interno dentro.
+#
+# Este comentario decia antes que poner un comando obligaria a instalar
+# dependencias, y era falso: sin package.json, Netlify no instala nada y el
+# rm se ejecuta tal cual en Bash. Lo que si cuesta algo es un paso de build
+# de verdad, que es lo que este sitio no tiene.
 
 [build]
   publish = "."
-  command = ""
+  command = "rm -rf docs tools README.md .gitignore netlify.toml"
 
 # --------------------------------------------------------------------------
 # Cabeceras de seguridad
