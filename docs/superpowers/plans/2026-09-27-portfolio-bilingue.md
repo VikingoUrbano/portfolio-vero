@@ -4,9 +4,9 @@
 
 **Goal:** Construir el sitio bilingüe estático de Verónica Ramírez, verificable localmente, y dejarlo listo para desplegar en Netlify.
 
-**Architecture:** HTML y CSS estáticos sin paso de compilación. Tres páginas de contenido (`/`, `/es/`, `/en/`) y dos de confirmación, una hoja de tokens compartidos, una de maquetación, y un archivo de JavaScript para detección de idioma, navegación móvil y envío del formulario. Netlify Forms como único back-end. Verificación automatizada con Node sin dependencias y Chrome headless de Windows.
+**Architecture:** HTML y CSS estáticos sin paso de compilación. Tres páginas de contenido (`/`, `/es/`, `/en/`) y dos de confirmación, una hoja de tokens compartidos, una de maquetación, y un archivo de JavaScript para detección de idioma, navegación móvil y envío del formulario. Netlify Forms como único back-end. Verificación automatizada con Node sin dependencias y Firefox headless de Windows.
 
-**Tech Stack:** HTML5, CSS3 (custom properties, Grid, Flexbox), JavaScript vanilla, Netlify Forms, Node 22 para las herramientas de verificación, Chrome headless para las pruebas de maquetación.
+**Tech Stack:** HTML5, CSS3 (custom properties, Grid, Flexbox), JavaScript vanilla, Netlify Forms, Node 22 para las herramientas de verificación, Firefox headless para las pruebas de maquetación.
 
 **Spec:** `docs/superpowers/specs/2026-09-27-portfolio-bilingue-design.md`
 
@@ -62,11 +62,14 @@ portfolio-vero/
 └── tools/
     ├── contrast.mjs                cálculo WCAG, sin dependencias
     ├── contrast.test.mjs
-    ├── check.html                  arnés de aserciones en navegador
+    ├── serve.mjs                   servidor estático + colector de resultados
+    ├── check.html                  arnés de aserciones en el navegador
+    ├── verificar.mjs               corredor de la verificación
+    ├── capturar.mjs                captura de una página a un tamaño exacto
     └── social-card.html            plantilla 1200x630
 ```
 
-Cada archivo tiene una responsabilidad única. `tools/` no se despliega en producción más allá de lo inofensivo que es: no hay referencias a él desde el sitio, así que nunca se descarga.
+Cada archivo tiene una responsabilidad única. `tools/` no se despliega en producción más allá de lo inofensivo que es: no hay referencias a él desde el sitio, así que nunca se descarga. La única excepción parcial es `social-card.html`, que se usa para generar las tarjetas sociales y por eso queda referenciado antes de que exista el archivo. Ese `FAIL` es el único aceptable en toda la verificación, y desaparece en cuanto se generan las dos imágenes.
 
 ---
 
@@ -138,133 +141,72 @@ git commit -m "test: add WCAG contrast calculator and pin the site palette to it
 
 ---
 
-### Tarea 2: Arnés de verificación en navegador
+### Tarea 2: Herramienta de verificación en Firefox
 
 **Archivos:**
+- Crear: `tools/serve.mjs`
 - Crear: `tools/check.html`
+- Crear: `tools/verificar.mjs`
+- Modificar: `.gitignore`, para ignorar `ff-perfil-verif-*/`
 
 **Interfaces:**
-- Consume: la tarea 1 no aporta nada aquí; el arnés se apoya en `window.__CHECK__` para inyectar medidas.
-- Produce: una página que recibe la lista de páginas a verificar por la cadena de consulta `?p=/es/index.html&w=360&js=1` y escribe un bloque `<pre id="resultado">` con una línea `PASS` o `FAIL` por aserción. La ejecuta Chrome headless con `--dump-dom` y se lee con `grep`.
+- Consume: páginas servidas por HTTP en `127.0.0.1`.
+- Produce: `node tools/verificar.mjs [--paginas a,b] [--anchos 320,360,768,1440] [--sin-js] [--capturas]`, que imprime una línea `PASS` o `FAIL` por comprobación y **sale con código 1 si hay un solo `FAIL`**, de modo que sirve como puerta en un script.
 
-**Por qué esta tarea va segunda:** es el instrumento con el que se revisa todo lo demás. Sin él, las tareas 4 a 8 no tienen forma de demostrar nada.
+**Por qué va segunda:** es el instrumento con el que se revisa todo lo demás. Las tareas 4 a 8 no tienen forma de demostrar nada sin él.
 
-- [ ] **Paso 1: Escribir el arnés**
+**Por qué tres archivos y no uno:** el servidor y el arnés tienen que poder ejecutarse por separado. Durante la escritura de esta herramienta fue necesario depurar el arnés con el servidor en primer plano y un registro de peticiones, cosa que no se puede hacer si el corredor los lleva acoplados en un solo proceso.
 
-`tools/check.html`, un archivo autónomo. Estructura:
+- [ ] **Paso 1: Escribir `tools/serve.mjs`**
 
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="utf-8"><title>Verificación</title></head>
-<body>
-<pre id="resultado">ejecutando</pre>
-<script type="module">
-const params = new URLSearchParams(location.search);
-const ruta   = params.get("p") || "/es/index.html";
-const ancho  = Number(params.get("w") || 360);
-const lineas = [];
+Servidor estático sin dependencias, con un canal lateral. Sirve el repositorio y además acepta `POST /__resultado`, cuyo cuerpo imprime por stdout. Ese canal es lo que permite que el navegador entregue sus resultados: WSL no alcanza ningún puerto abierto por un proceso de Windows, así que la única dirección que funciona es navegador hacia servidor, que es justo la que hace falta.
 
-const ok = (nombre, cond, detalle = "") =>
-  lineas.push(`${cond ? "PASS" : "FAIL"} ${nombre}${detalle ? " :: " + detalle : ""}`);
+Resuelve el contenido en función de la extensión, devuelve `404` en texto plano para lo que no existe, sirve `Cache-Control: no-store` para que una versión anterior en caché no falsee una verificación, y rechaza con `400` cualquier ruta que contenga `..` antes de tocar el disco.
 
-const doc = await (await fetch(ruta)).text();
-const d = new DOMParser().parseFromString(doc, "text/html");
+Añade el registro de peticiones detrás de `process.env.SERVE_MODO === "verbose"`. No es Instrumentación decorativa: fue lo que permitió distinguir "Firefox no cargó la página" de "el arnés falló", que son dos fallos muy distintos con el mismo sintoma, un código de salida 0.
 
-// --- aserciones de estructura, sobre el documento analizado ---
-ok("lang correcto", d.documentElement.lang === "es" || d.documentElement.lang === "en",
-   d.documentElement.lang);
-ok("un solo h1", d.querySelectorAll("h1").length === 1,
-   String(d.querySelectorAll("h1").length));
-ok("h1 no vacio", (d.querySelector("h1")?.textContent || "").trim().length > 0);
-const niveles = [...d.querySelectorAll("h1,h2,h3,h4,h5,h6")].map(e => +e.tagName[1]);
-ok("la jerarquia de encabezados no salta de nivel",
-   niveles.every((n, i) => i === 0 || n - niveles[i - 1] <= 1), niveles.join(">"));
-ok("sin h1 duplicado por id", new Set([...d.querySelectorAll("[id]")].map(e => e.id)).size
-   === d.querySelectorAll("[id]").length);
-ok("todo img tiene alt", [...d.querySelectorAll("img")].every(i => i.hasAttribute("alt")));
-ok("todo img tiene width y height", [...d.querySelectorAll("img")]
-   .every(i => i.hasAttribute("width") && i.hasAttribute("height")));
-ok("todo input y textarea tiene label", [...d.querySelectorAll("input:not([type=hidden]), textarea, select")]
-   .every(c => d.querySelector(`label[for="${c.id}"]`) || c.getAttribute("aria-label")));
-ok("sin href vacio", ![...d.querySelectorAll("a")].some(a => a.getAttribute("href") === ""));
-ok("sin target=_blank sin rel", [...d.querySelectorAll('a[target="_blank"]')]
-   .every(a => (a.getAttribute("rel") || "").includes("noopener")));
+- [ ] **Paso 2: Escribir `tools/check.html`**
 
-// --- aserciones de red: cada href y src local existe ---
-const base = new URL(ruta, location.origin);
-const rutas = [...d.querySelectorAll("[href], [src]")]
-  .map(e => e.getAttribute("href") || e.getAttribute("src"))
-  .filter(v => v && !/^(https?:|mailto:|tel:|#|data:)/.test(v));
-const rotas = [];
-for (const r of rutas) {
-  const u = new URL(r, base);
-  const destino = u.pathname.endsWith("/") ? u.pathname + "index.html" : u.pathname;
-  const res = await fetch(destino, { method: "GET" });
-  if (!res.ok) rotas.push(`${r} (HTTP ${res.status})`);
-}
-ok("todos los recursos locales existen", rotas.length === 0, rotas.join("; "));
+El arnés. Tres restricciones no negociables, las tres descubiertas porque el Firefox headless **termina el proceso en cuanto dispara `load`** y se lleva por delante el trabajo pendiente:
 
-// --- aserciones de maquetacion, en un iframe del ancho pedido ---
-const marco = document.createElement("iframe");
-marco.style.cssText = `width:${ancho}px;height:900px;border:0;position:absolute;left:-9999px`;
-marco.src = ruta;
-document.body.appendChild(marco);
-await new Promise(r => (marco.onload = r));
-await new Promise(r => setTimeout(r, 400));   // deja asentar las fuentes
+1. **Los iframes se escriben con `document.write` durante el análisis, nunca con `appendChild`.** Un iframe insertado después no retrasa el evento `load`; uno escrito durante el análisis sí. Así, cuando `load` se dispara, las páginas que hay que medir ya están renderizadas.
+2. **El manejador de `load` es sincrónico, sin un solo `await`.** En cuanto una función `async` cede el control en el primer `await`, Firefox alcanza a tomar la captura y muere, y el resultado se pierde entero sin dejar rastro. Por eso toda la red va por `XMLHttpRequest` sincrónico.
+3. **La entrega del resultado es un `POST` sincrónico** a `/__resultado`. Bloquea el hilo principal hasta que el servidor responde, de modo que el proceso no puede morir a mitad de la entrega.
 
-const v = marco.contentDocument.documentElement;
-ok(`sin desbordamiento horizontal a ${ancho}px`,
-   v.scrollWidth <= v.clientWidth + 1, `${v.scrollWidth} > ${v.clientWidth}`);
+Consecuencia aceptada y documentada en el propio archivo: no hay margen para que las fuentes terminen de cargar, así que la medición de maqueta se hace con la tipografía de reserva. El desbordamiento horizontal lo determinan los anchos de caja, no el ancho de los glifos, así que el resultado sigue siendo válido; lo que no cubre es el ajuste de líneas dentro de un párrafo.
 
-ok("ningun texto se sale del viewport", [...marco.contentDocument.querySelectorAll("body *")]
-   .filter(e => e.getBoundingClientRect().right > ancho + 1)
-   .slice(0, 3).map(e => e.tagName + "." + e.className).join("; ") === "",
-   [...marco.contentDocument.querySelectorAll("body *")]
-     .filter(e => e.getBoundingClientRect().right > ancho + 1)
-     .slice(0, 3).map(e => `${e.tagName}.${e.className}`).join("; "));
+Comprueba: `lang` declarado, un solo `h1`, `h1` con texto, jerarquía de encabezados sin saltos, identificadores únicos, `alt` y `width`/`height` en toda imagen, `label` asociado a todo control, ningún enlace sin `href`, ningún `target="_blank` sin `rel="noopener"`, todo `button` con `type` declarado, los tres `hreflang` en las páginas de contenido, y que cada `href` y `src` local resuelva a algo que exista. Mide además, por cada combinación de página y ancho, desbordamiento horizontal, elementos que se salen del viewport, y que la página renderice algo.
 
-// la altura del documento no puede ser cero: si el CSS fallo, el iframe esta vacio
-ok("la pagina renderiza contenido", v.scrollHeight > 400, String(v.scrollHeight));
+- [ ] **Paso 3: Escribir `tools/verificar.mjs`**
 
-document.getElementById("resultado").textContent =
-  "RESULTADO\n" + lineas.join("\n") + "\nFIN";
-</script>
-</body>
-</html>
-```
+El corredor. Levanta el servidor como proceso hijo, lanza Firefox headless contra el arnés, recoge lo que el navegador entregó y lo imprime.
 
-- [ ] **Paso 2: Probar el arnés contra una página trivial**
+Dos detalles que no son opcionales:
 
-Levantar un servidor y comprobar que devuelve líneas PASS y no se queda en "ejecutando":
+- **Un directorio de perfil nuevo por corrida**, con el pid como sufijo. Un Firefox que quedó abierto sigue teniendo bloqueados los archivos de su perfil, y un `rm` fallido a mitad de la corrida aborta la verificación entera. Los perfiles viejos se descartan al empezar, con tolerancia al fallo.
+- **El hijo se mata en un `finally` y en un `process.on("exit")`.** Si el script aborta por una excepción y el servidor queda escuchando, ocupa el puerto de la corrida siguiente y el fallo se repite en la siguiente invocación, que es mucho más difícil de diagnosticar que el original.
+
+**Desactivar JavaScript es una preferencia, no una opción.** Firefox no tiene equivalente de `--blink-settings=scriptEnabled=false`: hay que escribir `user_pref("javascript.enabled", false);` en el `user.js` del perfil.
+
+- [ ] **Paso 4: Probar la herramienta contra una página con defectos conocidos**
+
+Antes de confiar en el instrumento hay que demostrar que detecta. Crear una página de prueba en `_prueba/pagina.html` con tres defectos deliberados: un `div` de 900 px de ancho, un `lang` ausente, y un `href` a una ruta que no existe.
 
 ```bash
 cd /mnt/d/PROGRAMACION/VERO/portfolio-vero
-nohup python3 -m http.server 8000 --bind 127.0.0.1 >/dev/null 2>&1 &
-sleep 1
-"/mnt/c/Program Files/Google/Chrome/Application/chrome.exe" --headless=new --disable-gpu \
-  --no-sandbox --virtual-time-budget=8000 --window-size=400,900 \
-  --dump-dom "http://localhost:8000/tools/check.html?p=/index.html&w=360" 2>/dev/null \
-  | sed -n '/RESULTADO/,/FIN/p'
+node tools/verificar.mjs --paginas /_prueba/pagina.html --anchos 320,800
 ```
 
-Expected: un bloque con líneas `PASS`/`FAIL` terminado en `FIN`. En esta tarea el resultado importa `FAIL`, porque `index.html` todavía no existe; lo que se verifica es que el arnés **responde** y no se cuelga.
+Expected: el verificador **falla** y nombra los tres defectos. Un instrumento que dice `PASS` sobre una página rota no sirve para nada, así que un resultado todo verde aquí es señal de defecto, no de página buena.
 
-- [ ] **Paso 3: Probar el arnés con los scripts desactivados**
+Después borrar `_prueba/`.
 
-Repetir el comando anterior añadiendo `--blink-settings=scriptEnabled=false`.
-
-Expected: no aparece el bloque `RESULTADO`. Esa es la comprobación de que la flag sirve, y se usa en la tarea 7 para probar la degradación sin JavaScript.
-
-- [ ] **Paso 4: Commitar**
+- [ ] **Paso 5: Commitar**
 
 ```bash
-git add tools/check.html
-git commit -m "test: add browser assertion harness for structure, assets and overflow"
+git add tools/serve.mjs tools/check.html tools/verificar.mjs .gitignore
+git commit -m "test: add Firefox-driven verification harness with result collector"
 ```
-
----
-
 ### Tarea 3: Fuentes, tokens y tipografía base
 
 **Archivos:**
@@ -424,10 +366,7 @@ Pie, `<footer id="contacto">` con el email como enlace `mailto:`, el teléfono c
 
 ```bash
 cd /mnt/d/PROGRAMACION/VERO/portfolio-vero
-"/mnt/c/Program Files/Google/Chrome/Application/chrome.exe" --headless=new --disable-gpu \
-  --no-sandbox --virtual-time-budget=8000 --dump-dom \
-  "http://localhost:8000/tools/check.html?p=/es/index.html&w=360" 2>/dev/null \
-  | sed -n '/RESULTADO/,/FIN/p' | grep -E 'FAIL|FIN'
+node tools/verificar.mjs --paginas /es/index.html --anchos 360
 ```
 
 Expected: los `FAIL` son solo de recursos inexistentes, porque `assets/layout.css`, `assets/main.js` y las imágenes todavía no están. **`lang`, `un solo h1`, `alt`, `width`/`height` y los `label` tienen que pasar todos.** Cualquier otro `FAIL` es un defecto del markup y se corrige antes de seguir.
@@ -632,16 +571,7 @@ lo que garantiza que sin CSS la lista de enlaces se vea y el sitio siga siendo n
 
 ```bash
 cd /mnt/d/PROGRAMACION/VERO/portfolio-vero
-CH="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-for p in /es/index.html /en/index.html; do
-  for w in 320 360 768 1440; do
-    echo "--- $p a ${w}px"
-    "$CH" --headless=new --disable-gpu --no-sandbox --virtual-time-budget=8000 \
-      --window-size=1400,1000 --dump-dom \
-      "http://localhost:8000/tools/check.html?p=${p}&w=${w}" 2>/dev/null \
-      | sed -n '/RESULTADO/,/FIN/p' | grep -E 'FAIL|desbordamiento|ningun texto' 
-  done
-done
+node tools/verificar.mjs --paginas /es/index.html,/en/index.html --anchos 320,360,768,1440
 ```
 
 Expected: ninguna línea `FAIL` que mencione desbordamiento, texto fuera del viewport o contenido vacío.
@@ -797,16 +727,27 @@ Lo que sí se verifica en local es el camino de error y la bandera `enVuelo`, co
 
 ```bash
 cd /mnt/d/PROGRAMACION/VERO/portfolio-vero
-CH="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-"$CH" --headless=new --disable-gpu --no-sandbox --blink-settings=scriptEnabled=false \
-  --virtual-time-budget=8000 --dump-dom "http://localhost:8000/es/index.html" 2>/dev/null \
-  > /tmp/sin-js.html
-grep -c 'action="/es/confirmacion.html"' /tmp/sin-js.html | sed 's/^/  action del formulario presente: /'
-grep -c 'name="form-name" value="presupuesto"' /tmp/sin-js.html | sed 's/^/  form-name oculto presente: /'
-grep -c '<h1' /tmp/sin-js.html | sed 's/^/  h1 presente: /'
+node tools/verificar.mjs --paginas /es/index.html,/en/index.html --anchos 360 --sin-js
 ```
 
-Expected: los tres contadores en 1 o más. Un cero en cualquiera de los tres significa que sin JavaScript el formulario no se puede enviar, que es el punto 4 de Review Focus.
+**Lo que este comando demuestra es indirecto pero suficiente:** sin JavaScript el arnés no puede
+ejecutar sus comprobaciones, así que no entrega ninguna línea, y eso es exactamente el resultado
+esperado. Un `PASS` en esta corrida significaría que el navegador siguió ejecutando scripts y que la
+preferencia del perfil no se aplicó, con lo cual la prueba no habría probado nada.
+
+La parte que sí importa, que el formulario siga siendo enviable sin scripts, se comprueba sobre el
+código fuente, que es donde vive el `action` y el `form-name` que usa Netlify:
+
+```bash
+cd /mnt/d/PROGRAMACION/VERO/portfolio-vero
+for f in es/index.html en/index.html; do
+  printf "%-18s action=%s form-name=%s boton=%s
+" "$f"     "$(grep -c 'confirmaci' "$f")"     "$(grep -c 'name="form-name" value="presupuesto"' "$f")"     "$(grep -c 'type="submit"' "$f")"
+done
+```
+
+Expected: los tres contadores en 1 o más en las dos páginas. Un cero en cualquiera significa que sin
+JavaScript el formulario no se puede enviar, que es el punto 4 de Review Focus.
 
 - [ ] **Paso 6: Probar que el primer control del formulario no es la trampa**
 
@@ -873,22 +814,25 @@ Cuerpo: el nombre, un texto de una línea, y dos botones grandes con `class="bot
 
 `tools/social-card.html`, con variables en la URL: `?lang=es` y `?lang=en`. Cuerpo de exactamente 1200 × 630 px, con la misma crema, el mismo verde y el mismo Fraunces del sitio, el nombre en grande y el oficio debajo.
 
+Con el servidor de la tarea 2 levantado, en otra terminal:
+
 ```bash
 cd /mnt/d/PROGRAMACION/VERO/portfolio-vero
-CH="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-mkdir -p /mnt/c/_vero_shots
-for lang in es en; do
-  "$CH" --headless=new --disable-gpu --no-sandbox --hide-scrollbars \
-    --virtual-time-budget=6000 --window-size=1200,630 \
-    --screenshot="C:\\_vero_shots\\social-${lang}.png" \
-    "http://localhost:8000/tools/social-card.html?lang=${lang}" 2>/dev/null
-  cp "/mnt/c/_vero_shots/social-${lang}.png" "assets/img/social-${lang}.png"
-done
-rm -rf /mnt/c/_vero_shots
+node tools/serve.mjs 8000 &
+sleep 1
+node tools/capturar.mjs "http://localhost:8000/tools/social-card.html?lang=es" \
+  assets/img/social-es.png 1200 630
+node tools/capturar.mjs "http://localhost:8000/tools/social-card.html?lang=en" \
+  assets/img/social-en.png 1200 630
 ls -la assets/img/
 ```
 
-Expected: dos PNG de 1200 × 630. **La ruta de salida tiene que ser de Windows** (`C:\...`), porque el proceso es un Chrome de Windows y no puede escribir en una ruta WSL: si se omite la conversión, falla con *Acceso denegado*.
+Expected: dos PNG de 1200 × 630, y `OK` en la salida de cada comando.
+
+`tools/capturar.mjs` existe por una razón concreta: el navegador es un proceso de Windows y no
+puede escribir en una ruta de WSL. En vez de convertir la ruta a mano en cada llamada, el script
+cambia el directorio de trabajo al del archivo de salida y le pasa a Firefox un nombre pelado, que
+Firefox resuelve como ruta relativa.
 
 - [ ] **Paso 4: Escribir `favicon.svg`**
 
@@ -906,24 +850,15 @@ Un SVG cuadrado con el fondo `#FBF9F6` y las iniciales **VR** en Fraunces o en u
 
 ```bash
 cd /mnt/d/PROGRAMACION/VERO/portfolio-vero
-CH="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-fallos=0
-for p in /index.html /es/index.html /en/index.html /es/confirmacion.html /en/confirmation.html; do
-  for w in 320 768 1440; do
-    out=$("$CH" --headless=new --disable-gpu --no-sandbox --virtual-time-budget=8000 \
-      --window-size=1400,1000 --dump-dom \
-      "http://localhost:8000/tools/check.html?p=${p}&w=${w}" 2>/dev/null \
-      | sed -n '/RESULTADO/,/FIN/p')
-    n=$(printf '%s' "$out" | grep -c '^FAIL' || true)
-    printf "  %-26s %5spx  FAIL=%s\n" "$p" "$w" "$n"
-    fallos=$((fallos + n))
-  done
-done
-echo "TOTAL DE FALLOS: $fallos"
+```bash
+cd /mnt/d/PROGRAMACION/VERO/portfolio-vero
+node tools/verificar.mjs \
+  --paginas /index.html,/es/index.html,/en/index.html,/es/confirmacion.html,/en/confirmation.html \
+  --anchos 320,768,1440
 ```
 
-Expected: `TOTAL DE FALLOS: 0`.
-
+Expected: `FALLOS: 0`. El verificador sale con código 1 si hay alguno, así que también sirve como
+puerta.
 - [ ] **Paso 7: Validar el HTML contra el validador de W3C**
 
 ```bash
@@ -955,7 +890,7 @@ git commit -m "feat: add language chooser, SEO files, images and social cards"
 - [ ] **Paso 10: Parar el servidor local y entregar**
 
 ```bash
-pkill -f "http.server 8000"
+node tools/verificar.mjs --paginas /es/index.html,/en/index.html --anchos 360,1440 --capturas
 git log --oneline -8
 ```
 
