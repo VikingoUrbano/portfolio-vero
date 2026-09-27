@@ -118,16 +118,6 @@
   días hábiles. Los campos marcados con un asterisco son obligatorios; el volumen y la fecha límite
   son opcionales.</p>
 
-  <!-- El campo trampa va primero a propósito, pero con estas cuatro
-       protecciones: sin autocomplete, fuera de la pestaña, oculto a la
-       tecnología de asistencia y tamaño cero. Un autocompletador del navegador
-       que rellene un campo trampa descarta la solicitud entera, y eso se
-       lleva por delante a un cliente real, no a un robot. -->
-  <p class="trampa" aria-hidden="true">
-    <label for="sitio-web">No completar este campo</label>
-    <input type="text" id="sitio-web" name="sitio-web" tabindex="-1" autocomplete="off">
-  </p>
-
   <form name="presupuesto"
         method="POST"
         action="/es/confirmacion.html"
@@ -183,6 +173,33 @@
       <textarea id="comentarios" name="comentarios" rows="6"
                 placeholder="Contexto, plazos, formato del archivo de origen, lo que necesites que sepa."></textarea>
     </div>
+
+
+    <!-- El campo trampa va DENTRO del formulario y al final, por dos motivos
+         que se refuerzan.
+
+         Dentro, porque es el unico sitio donde Netlify lo encuentra al
+         analizar el HTML y el unico que FormData mira al armar el cuerpo del
+         POST. Fuera del formulario no es un campo trampa: es un input suelto
+         que no viaja en el envio, y el filtro de Netlify se queda sin nada
+         que descartar.
+
+         Al final, y no el primero, porque el primer control que ve el
+         autocompletador del navegador tiene que ser "nombre". Un autocompletador
+         que rellene la trampa hace que Netlify descarte la solicitud entera,
+         y eso se lleva por delante a un cliente real y no a un robot.
+
+         De ahi las otras tres protecciones: sin autocomplete, fuera de la
+         pestaña y oculto a la tecnologia de asistencia. Y se esconde con
+         posicionamiento, nunca con display: none, que saca el elemento del
+         arbol y deja de existir para el analisis de Netlify.
+
+         Con esto el campo queda presente en el formulario pero invisible y no
+         enfocable: ningun robot que solo mire el DOM lo va a completar. -->
+    <p class="trampa" aria-hidden="true">
+      <label for="sitio-web">No completar este campo</label>
+      <input type="text" id="sitio-web" name="sitio-web" tabindex="-1" autocomplete="off">
+    </p>
 
     <div class="envio">
       <button type="submit" class="boton" data-enviando="Enviando…" data-original="Enviar solicitud">Enviar solicitud</button>

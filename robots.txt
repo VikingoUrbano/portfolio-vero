@@ -1,0 +1,16 @@
+# Todo permitido. Este archivo no lleva "Disallow: /" a proposito.
+#
+# La raiz lleva <meta name="robots" content="noindex, follow"> para que no se
+# indexe, y una linea Disallow impediria al rastreador llegar a leer ese
+# noindex. El resultado seria el contrario del buscado: la pagina se
+# indexaria igual y ademas el buscador no podria ver que las dos versiones
+# reales estan enlazadas con hreflang desde ahi.
+#
+# Es un archivo vacio de reglas porque un sitio de dos paginas publicas no
+# tiene nada que esconder. Si algun dia se anaden archivos que no deben
+# rastrearse, la forma correcta es un noindex en la pagina, no un bloqueo
+# aqui.
+User-agent: *
+Allow: /
+
+Sitemap: https://veronicaramirez.netlify.app/sitemap.xml

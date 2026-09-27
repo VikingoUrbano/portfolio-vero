@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Esta página existe para que alguien que llega a la barra de direcciones
+     elija idioma, no para que un robot la lea. El noindex va en la meta y no
+     en robots.txt: una línea Disallow impide al rastreador llegar a leer el
+     noindex, y entonces la página queda indexada igual, que es justo lo
+     contrario de lo que se quería. -->
+
+<title>Verónica Ramírez · Traductora e intérprete de inglés</title>
+<meta name="description" content="Traductora e intérprete de inglés, con certificación C2 de la University of Michigan. Elegí el idioma del sitio.">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://veronicaramirez.netlify.app/es/">
+<link rel="alternate" hreflang="es" href="https://veronicaramirez.netlify.app/es/">
+<link rel="alternate" hreflang="en" href="https://veronicaramirez.netlify.app/en/">
+<link rel="alternate" hreflang="x-default" href="https://veronicaramirez.netlify.app/es/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:site_name" content="Verónica Ramírez">
+<meta property="og:title" content="Verónica Ramírez · Traductora e intérprete de inglés">
+<meta property="og:description" content="Traducción, subtitulado, localización e interpretación entre español e inglés.">
+<meta property="og:url" content="https://veronicaramirez.netlify.app/">
+<meta property="og:image" content="https://veronicaramirez.netlify.app/assets/img/social-es.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/layout.css">
+
+<!-- El envío a la versión del idioma va aquí y no en main.js, y esto es
+     deliberado. main.js está diferido: el navegador lo ejecuta después de
+     analizar el documento entero, o sea después de descargar la hoja de
+     estilos y de pintar. Con la redirección en un script del <head> el
+     visitante que llega a la raíz no espera a nada para caer en la
+     versión correcta.
+
+     Y los dos botones de abajo funcionan sin este script, que es el motivo de
+     que la página sea una página y no una redirección: alguien con scripts
+     desactivados, o con un script bloqueado por una extensión, elige a
+     mano y sigue hacia adelante. location.replace y no location.href, para
+     que el botón de atrás no devuelva a la raíz, que mandaría otra vez al
+     mismo sitio. -->
+<script>
+  (function () {
+    if (/^es\b/i.test(navigator.language || "")) {
+      location.replace("/es/");
+    } else {
+      location.replace("/en/");
+    }
+  })();
+</script>
+</head>
+
+<body class="pagina-idioma">
+
+<main>
+  <div class="eleccion">
+
+    <h1>Verónica Ramírez</h1>
+    <p class="eleccion-oficio">Traductora e intérprete de inglés · English and Spanish
+    translator and interpreter</p>
+
+    <p class="eleccion-acciones">
+      <a class="boton boton-grande" href="/es/" hreflang="es" lang="es">Español</a>
+      <a class="boton boton-grande" href="/en/" hreflang="en" lang="en">English</a>
+    </p>
+
+    <p class="eleccion-nota">Traducción, subtitulado, localización e interpretación
+    entre español e inglés.</p>
+
+  </div>
+</main>
+
+<script src="/assets/main.js" defer></script>
+</body>
+</html>

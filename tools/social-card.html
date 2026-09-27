@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tarjeta social</title>
+<!--
+  Generador de las dos tarjetas que aparecen cuando alguien comparte el
+  No es una página del sitio: es una herramienta que
+  tools/capturar.mjs fotografía a 1200 x 630 exactos.
+
+  Usa las mismas fuentes, el mismo crema y el mismo verde que el sitio, para
+  que la tarjeta no parezca de otra web. Está fuera de /assets/img/ a
+  proposito: es una herramienta, no un recurso publicado.
+
+  Por qué generarla y no dibujarla: maquetar un PNG de 1200 x 630 a mano
+  obliga a elegir tipografías, medidas y colores otra vez, y la tarjeta se
+  desincroniza del sitio en la primera correccion de estilo. Aqui el mismo
+  HTML que ve el visitante produce la imagen, y si mañana cambia el verde
+  también cambia la tarjeta.
+
+  Los textos vienen de la URL (?lang=es / ?lang=en) y no de un archivo, para
+  que las dos tarjetas salgan de la misma fuente y no puedan divergir.
+-->
+<link rel="stylesheet" href="/assets/tokens.css">
+<style>
+  /* El reset de tokens.css pone el fondo del color del sitio, pero aqui el
+     cuerpo tiene que medir exactamente 1200 x 630, sin margen y sin
+     scroll: una tarjeta con una barra de desplazamiento se ve recortada en
+     cuanto la plataforma la recorta un poco más. */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    background: var(--fondo);
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 88px 96px;
+    font-family: var(--sans);
+  }
+
+  .oficio {
+    font-family: var(--serif);
+    font-variation-settings: var(--fraunces-axes);
+    font-size: 42px;
+    line-height: 1.25;
+    color: var(--acento);
+    margin: 0 0 36px;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-variation-settings: var(--fraunces-axes);
+    font-size: 108px;
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin: 0 0 40px;
+  }
+
+  .franja {
+    width: 168px;
+    height: 6px;
+    background: var(--acento);
+    margin: 0 0 40px;
+  }
+
+  .detalle {
+    font-size: 27px;
+    line-height: 1.5;
+    color: var(--texto-suave);
+    margin: 0;
+    max-width: 900px;
+  }
+
+  .pie {
+    position: absolute;
+    left: 96px;
+    right: 96px;
+    bottom: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 24px;
+    color: var(--texto-suave);
+  }
+</style>
+</head>
+
+<body>
+  <p class="oficio" id="oficio">Traductora e intérprete de inglés</p>
+  <h1>Verónica Ramírez</h1>
+  <div class="franja"></div>
+  <p class="detalle" id="detalle">Traducción, subtitulado, localización e interpretación
+  entre español e inglés.</p>
+
+  <p class="pie">
+    <span>vero22ramm@gmail.com</span>
+    <span>Rosario, Argentina</span>
+  </p>
+
+<script>
+  // El texto se cambia antes de que se imprima, asi que las fuentes ya estan
+  // cargadas y el texto entra con la tipografia final y no con la de
+    // reserva, que es lo que produciria un intercambio de lineas en
+    // cuanto la tarjeta se recortase.
+  // lineas en cuanto la tarjeta se recortase.
+  var TEXTOS = {
+    es: {
+      oficio: "Traductora e intérprete de inglés",
+      detalle: "Traducción, subtitulado, localización e interpretación entre español e inglés."
+    },
+    en: {
+      oficio: "English and Spanish translator and interpreter",
+      detalle: "Translation, subtitling, localization and interpreting between Spanish and English."
+    }
+  };
+
+  var lang = new URLSearchParams(location.search).get("lang") === "en" ? "en" : "es";
+  document.documentElement.lang = lang;
+  document.getElementById("oficio").textContent = TEXTOS[lang].oficio;
+  document.getElementById("detalle").textContent = TEXTOS[lang].detalle;
+  document.fonts.ready.then(function () {
+    document.documentElement.setAttribute("data-listas", "1");
+  });
+</script>
+</body>
+</html>

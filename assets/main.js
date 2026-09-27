@@ -1,40 +1,27 @@
 /* ==========================================================================
    Portfolio de Verónica Ramírez — comportamiento
-   Un solo IIFE, sin dependencias y sin API global. Hace tres cosas
-   independientes: detectar el idioma en la raíz, plegar la navegación en
-   pantallas angostas y enviar el formulario sin recargar.
+   Un solo IIFE, sin dependencias y sin API global. Hace dos cosas
+   independientes: plegar la navegación en pantallas angostas y enviar el
+   formulario sin recargar.
 
-   El CSS aplica la regla contraria en los tres casos. Sin este archivo el
+   La tercera cosa que se le atribuye a este archivo —mandar a la versión
+   del idioma de quien llega a la raíz— no está aquí. Está en un script del
+   <head> de index.html, y conviene que siga así: main.js está diferido, o
+   sea que el navegador lo ejecuta después de analizar el documento, cuando
+   ya descargó la hoja de estilos y ya pintó. Una redirección a la que hay
+   que esperar a que termine de cargar un archivo pesa de más.
+
+   Y el CSS aplica la regla contraria en los dos casos. Sin este archivo el
    sitio sigue siendo utilizable, que es la razón de que exista la clase
    "js" en el elemento raíz: el CSS solo pliega el menú si esa clase está
-   presente, y la pone este archivo.
+   presente, y la pone el script del <head> de cada página.
    ========================================================================== */
 
 (function () {
   "use strict";
 
   /* ------------------------------------------------------------------
-     1. Raíz: mandar a la versión del idioma del visitante
-
-     Solo actúa en la raíz y solo si la página no declara lang, que es el
-     caso de index.html. Las páginas de contenido declaran su idioma y no
-     entran por aquí.
-     ------------------------------------------------------------------ */
-
-  var esLaRaiz = /^\/(index\.html)?(\?.*)?$/.test(location.pathname);
-  var sinIdioma = !document.documentElement.getAttribute("lang");
-
-  if (esLaRaiz && sinIdioma) {
-    // location.replace y no location.href: con href, el botón "atrás"
-    // devuelve a la raíz, que manda a la misma página, y el visitante
-    // queda en un ciclo de dos clics.
-    var destino = /^\s*es\b/i.test(navigator.language || "") ? "/es/" : "/en/";
-    location.replace(destino);
-    return;
-  }
-
-  /* ------------------------------------------------------------------
-     2. Navegación angosta
+     1. Navegación angosta
 
      El botón alterna la clase "abierto" sobre el contenedor del menú, que
      es el mismo elemento al que apunta aria-controls. El script no
@@ -63,7 +50,7 @@
   }
 
   /* ------------------------------------------------------------------
-     3. Envío del formulario
+     2. Envío del formulario
      ------------------------------------------------------------------ */
 
   var form = document.querySelector('form[name="presupuesto"]');

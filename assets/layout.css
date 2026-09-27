@@ -754,3 +754,72 @@ footer {
 .simple-acciones {
   margin-top: 2rem;
 }
+
+/* --------------------------------------------------------------------------
+   Página de elección de idioma (la raíz)
+
+   Es la primera pantalla de una visita y normalmente dura menos de un
+   segundo, porque el script del <head> manda a la versión correcta. El
+   diseño tiene que sostener el caso contrario —sin scripts— y ese es el
+   segundo, porque el visitante no sabe que el sitio está en dos
+  dependa de acertar un enlace pequeño.
+   -------------------------------------------------------------------------- */
+
+.pagina-idioma main {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: clamp(2rem, 6vw, 4rem);
+}
+
+.eleccion {
+  width: 100%;
+  max-width: 32rem;
+  text-align: center;
+}
+
+.eleccion h1 {
+  margin-bottom: 0.5rem;
+}
+
+.eleccion-oficio {
+  font-family: var(--serif);
+  font-variation-settings: var(--fraunces-axes);
+  font-size: clamp(1.0625rem, 2.5vw, 1.375rem);
+  color: var(--acento);
+  margin-block: 0 2.5rem;
+}
+
+.eleccion-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-block: 0 2rem;
+}
+
+.eleccion-nota {
+  font-size: 0.9375rem;
+  color: var(--texto-suave);
+  margin-block: 0;
+}
+
+.boton-grande {
+  display: block;
+  padding: 1.1rem 2rem;
+  font-size: 1.25rem;
+}
+
+@media (min-width: 34rem) {
+  .eleccion-acciones {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  /* Cada botón ocupa la mitad y ambos miden lo mismo, para que ninguno de los
+     dos idiomas parezca el secundario. */
+  .boton-grande {
+    flex: 1 1 0;
+    max-width: 12rem;
+  }
+}

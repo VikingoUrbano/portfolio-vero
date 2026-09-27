@@ -1,0 +1,93 @@
+# Sitio de Verónica Ramírez — traduccion e interpretacion
+#
+# No hay paso de compilacion: el sitio es HTML y CSS escritos a mano, y la
+# publicacion es el mismo repositorio. Anadir un comando de build aqui
+# obligaria a instalar dependencias en cada despliegue para no ganar nada.
+
+[build]
+  publish = "."
+  command = ""
+
+# --------------------------------------------------------------------------
+# Cabeceras de seguridad
+#
+# X-Frame-Options: nobody puede meter esta pagina dentro de un iframe, lo que
+# X-Frame-Options: ninguna pagina puede meter esta dentro de un iframe. El
+# uso mas frecuente de eso es copiar el formulario de una pagina legitima
+# dentro de otra para que el visitante escriba sus datos sin saberlo. Este
+# sitio no usa iframes, asi que no se pierde nada.
+# nosniff impide que el navegador adivine el tipo de un archivo y ejecute como
+# script un .txt o un .jpg que alguien suba por error.
+#
+# strict-origin-when-cross-origin envia el sitio de referencia entre paginas
+# del mismo dominio y en las peticiones a otros solo el dominio, nunca la
+# ruta. Es lo que deja saber a una editorial que la enlazaron sin
+# contarle que pagina se estaba leyendo.
+#
+# Permissions-Policy desactiva todo lo que este sitio no usa. Una pagina
+# estatica no necesita la camara, ni el microfono, ni la geolocalizacion, ni
+# el accelerometer: dejarlo todo en "self" es mas estricto que dejarlo
+# abierto y mas simple que denying feature por feature.
+# --------------------------------------------------------------------------
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+
+# --------------------------------------------------------------------------
+# Cache
+#
+# Las fuentes y las imagenes llevan un ano e immutable, porque un archivo que
+# cambia cambia de nombre y por lo tanto cambia de URL. Es el unico modo en
+# que immutable es seguro.
+#
+# Las hojas de estilo, el script y las dos paginas de contenido van con
+# no-cache, y no por descuido: no hay paso de compilacion, asi que sus
+# nombres de archivo no llevan huella digital. Con immutable, una correccion
+# de CSS no llegaria nunca a quien ya habia visitado el sitio, y sin paso de
+# compilacion no hay forma de purgar por URL. Este sitio tiene ademas una
+# unica autora, sin necesidad de invalidar cachés de otra gente.
+#
+# no-cache no significa "no guardar": significa "volver a preguntar antes de
+# usar lo guardado", que es justo lo que se quiere con un archivo sin
+# version. La respuesta sigue siendo rapidisima.
+# --------------------------------------------------------------------------
+
+[[headers]]
+  for = "/assets/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/tokens.css"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/assets/layout.css"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/assets/main.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/es/*"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/en/*"
+  [headers.values]
+    Cache-Control = "no-cache"

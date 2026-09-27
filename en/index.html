@@ -118,16 +118,6 @@
   business days. Fields marked with an asterisk are required; volume and deadline are
   optional.</p>
 
-  <!-- The trap field is deliberately first, with four protections at once: no
-       autocomplete, out of the tab order, hidden from assistive technology and
-       zero-sized. A browser autofill that fills a honeypot makes Netlify
-       discard the submission whole, and that takes a real client with it, not
-       a bot. -->
-  <p class="trampa" aria-hidden="true">
-    <label for="sitio-web">Do not fill in this field</label>
-    <input type="text" id="sitio-web" name="sitio-web" tabindex="-1" autocomplete="off">
-  </p>
-
   <form name="presupuesto"
         method="POST"
         action="/en/confirmation.html"
@@ -183,6 +173,33 @@
       <textarea id="comentarios" name="comentarios" rows="6"
                 placeholder="Context, deadlines, source file format, anything else I should know."></textarea>
     </div>
+
+
+    <!-- The trap field goes INSIDE the form and at the end, for two
+         reinforcing reasons.
+
+         Inside, because it is the only place Netlify finds it when parsing the
+         HTML and the only place FormData looks when building the POST body.
+         Outside the form it is not a honeypot: it is a loose input that never
+         travels with the submission, and Netlify's filter has nothing to
+         reject.
+
+         At the end, and not first, because the first control a browser
+         autofill sees has to be "name". An autofill that fills the honeypot
+         makes Netlify discard the submission whole, and that takes a real
+         client with it, not a bot.
+
+         Hence the other three protections: no autocomplete, out of the tab
+         order, hidden from assistive technology. And it is hidden with
+         positioning, never with display: none, which drops the element from
+         the tree and stops Netlify's parser from seeing it.
+
+         So the field is present in the form but invisible and unreachable by
+         keyboard: a bot that only reads the DOM is not going to fill it. -->
+    <p class="trampa" aria-hidden="true">
+      <label for="sitio-web">Do not fill in this field</label>
+      <input type="text" id="sitio-web" name="sitio-web" tabindex="-1" autocomplete="off">
+    </p>
 
     <div class="envio">
       <button type="submit" class="boton" data-enviando="Sending…" data-original="Send request">Send request</button>

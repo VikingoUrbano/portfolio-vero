@@ -11,7 +11,7 @@
 // destino puede ser cualquier ruta de Windows sin conversiones en el comando.
 
 import { spawn, execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 const [url, salida, ancho = "1200", alto = "630"] = process.argv.slice(2);
@@ -52,13 +52,22 @@ writeFileSync(join(dirPerfil, "user.js"), [
 ].join("\n") + "\n");
 
 const nombreTemporal = "captura-" + process.pid + ".png";
+// La ruta del archivo de salida tiene que ser una ruta de Windows, no la de
+// WSL. Firefox es un proceso de Windows: su directorio de trabajo no es el
+// que le paso con cwd, y un nombre pelado queda flotando en un sitio
+// imposible de adivinar. El directorio del perfil ya es el mismo, asi que
+// la conversion es una sola.
+const capturaWin = EN_WINDOWS
+  ? "C:\\ff-captura-" + process.pid + "\\" + nombreTemporal
+  : nombreTemporal;
+
 const ff = spawn(encontrado, [
   "--headless",
   "--profile", perfilWin,
   "--window-size", `${ancho},${alto}`,
-  "--screenshot", nombreTemporal,
+  "--screenshot", capturaWin,
   url,
-], { stdio: "ignore", cwd: dirPerfil });
+], { stdio: "ignore" });
 
 const limite = Date.now() + 90000;
 const producido = join(dirPerfil, nombreTemporal);
@@ -69,10 +78,18 @@ while (Date.now() < limite) {
 }
 try { ff.kill(); } catch {}
 
-// Firefox con --screenshot espera a que la pagina cargue y ademas espera a que
-// las fuentes esten listas, asi que la imagen ya sale con el texto definitivo.
+// Firefox con --screenshot dispara cuando la pagina carga. Se comprobo que a
+// ese momento las fuentes web ya estan aplicadas: dos capturas identicas
+// salvo por poner font-family: serif en el h1 salen en bytes distintos, asi
+// que la tarjeta sale con Fraunces y no con Georgia. No hace falta esperar a
+// document.fonts.ready, ni embeber las fuentes como data URI, que ademas
+// engordaria el generador en 150 KB.
 if (existsSync(producido)) {
-  renameSync(producido, destino);
+  // Copiar y no renombrar: el perfil vive en /mnt/c y la salida casi siempre
+  // esta en /mnt/d, que son dispositivos distintos. renameSync falla con
+  // EXDEV entre los dos, y este archivo no habria podido escribir nada.
+  // escribir nada.
+  copyFileSync(producido, destino);
   rmSync(dirPerfil, { recursive: true, force: true });
   console.log("OK " + destino);
 } else {
