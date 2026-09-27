@@ -25,3 +25,4 @@ npm-debug.log*
 
 # Perfiles de Firefox que crea el verificador
 ff-perfil-verif-*/
+tools/capturas/

@@ -10,7 +10,7 @@
 // Sin dependencias: solo modulos nativos de Node 22. Sale con codigo 1 si hay
 // una sola comprobacion en FAIL, para que sirva como puerta en un script.
 
-import { spawn, execFileSync } from "node:child_process";
+import { spawn, execFileSync, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
@@ -180,6 +180,38 @@ async function correr() {
     console.log("");
     console.log(`COMPROBACIONES: ${lineas.length}   FALLOS: ${fallos.length}`);
     if (fallos.length) process.exitCode = 1;
+  // Las capturas van despues de las comprobaciones y no durante: cada una
+  // necesita su propio proceso de Firefox, y el proceso que evalua el arnes
+  // ya termino su trabajo. Se reaprovecha tools/capturar.mjs, que es el que
+  // sabe traducir las rutas y esperar a que exista el archivo.
+  if (CAPTURAS) {
+    const hechos = [];
+    for (const pagina of PAGINAS) {
+      for (const ancho of ANCHOS.split(",")) {
+        const nombre = pagina.replace(/^\//, "").replace(/[/.]/g, "-").replace(/^-/, "") || "raiz";
+        const salida = join(CARPETA_CAPTURAS, `${nombre}--${ancho}.png`);
+        const r = spawnSync(process.execPath, [
+          join(RAIZ, "tools", "capturar.mjs"),
+          `http://localhost:${PUERTO}${pagina}`,
+          salida,
+          String(ancho),
+          "1400",
+        ], { stdio: "ignore" });
+        if (r.status === 0 && existsSync(salida)) {
+          hechos.push(salida);
+        } else {
+          console.error(`  No se pudo capturar ${pagina} a ${ancho} px`);
+          process.exitCode = process.exitCode || 2;
+        }
+      }
+    }
+    if (hechos.length) {
+      console.log("");
+      console.log(`CAPTURAS: ${hechos.length} en ${CARPETA_CAPTURAS}`);
+      for (const h of hechos) console.log("  " + h);
+    }
+  }
+
   } finally {
     terminar();
     try { servidor.hijo.kill(); } catch {}
