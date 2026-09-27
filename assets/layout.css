@@ -1,0 +1,693 @@
+/* ==========================================================================
+   Portfolio de Verónica Ramírez — maquetación
+   Composición y componentes. Este archivo no declara ninguna variable ni
+   ningún color literal: los toma de tokens.css. La única excepción son las
+   medidas, que son propias de cada elemento.
+
+   La dirección es móvil primero. Las reglas base están escritas para la
+   pantalla más angosta que todavía se usa, y cada ajuste vive dentro de un
+   min-width. Así un bloque sin ajuste ya funciona en el móvil sin que nadie
+   tenga que acordarse de adaptarlo después.
+
+   La única excepción a esa regla es el botón de menú, y está invertida a
+   propósito: los enlaces de sección se ven siempre por omisión y el botón
+   solo aparece por debajo de 48rem. Si el CSS no llegara a cargarse, la
+   lista de enlaces se ve igual y el sitio sigue siendo navegable, que es al
+   revés de lo que hace un max-width.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Contenedor y secciones
+   -------------------------------------------------------------------------- */
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3rem);
+}
+
+main > section {
+  padding-block: clamp(3rem, 8vw, 6rem);
+}
+
+main > section + section {
+  border-top: 1px solid var(--borde);
+}
+
+main > section h2 {
+  margin-bottom: 1.5rem;
+}
+
+.seccion-intro {
+  max-width: var(--ancho-texto);
+  color: var(--texto-suave);
+  margin-bottom: 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   Enlace de salto
+
+   Sin CSS es un enlace visible al principio de la página, que es feo pero
+   utilizable. Con CSS se saca de la vista hasta que recibe el foco, que es
+   exactamente cuando lo necesita la persona que lo está buscando.
+   -------------------------------------------------------------------------- */
+
+.salto {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 0.75rem 1.25rem;
+  background: var(--fondo-campo);
+  color: var(--acento);
+  z-index: 100;
+  text-decoration: underline;
+}
+
+.salto:focus {
+  left: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Navegación
+   -------------------------------------------------------------------------- */
+
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--fondo);
+  border-bottom: 1px solid var(--borde);
+}
+
+/* El desenfoque va con un fondo translúcido: sin él, el desenfoque no tiene
+   nada que ocultar y las líneas de texto se ven a través de la barra. */
+@supports (backdrop-filter: blur(8px)) {
+  .barra {
+    background: color-mix(in srgb, var(--fondo) 88%, transparent);
+    backdrop-filter: blur(8px);
+  }
+}
+
+.barra-interior {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin-inline: auto;
+  padding: 0.85rem clamp(1.25rem, 5vw, 3rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.marca {
+  font-family: var(--serif);
+  font-variation-settings: var(--fraunces-axes);
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--texto);
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.menu-lista {
+  display: flex;
+  gap: 1.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-lista a,
+.idioma {
+  color: var(--texto);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  font-size: 0.9375rem;
+}
+
+.idioma {
+  color: var(--acento);
+  font-weight: 600;
+  /* La frontera entre los dos idiomas es un detalle de un píxel, no un
+     elemento: separa el selector del resto de la lista sin competir con los
+     enlaces de sección. */
+  border-left: 1px solid var(--borde-campo);
+  padding-left: 1.25rem;
+}
+
+/* El botón de menú solo existe por debajo de 48rem. Arriba de ese ancho queda
+   en display: none por la regla base, que es lo que hace que el sitio sea
+   navegable sin CSS. */
+.boton-menu {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1.5px solid var(--acento);
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.boton-menu-lineas,
+.boton-menu-lineas::before,
+.boton-menu-lineas::after {
+  display: block;
+  width: 1.25rem;
+  height: 1.5px;
+  background: var(--acento);
+  margin-inline: auto;
+  content: "";
+}
+
+.boton-menu-lineas {
+  position: relative;
+}
+
+.boton-menu-lineas::before {
+  position: absolute;
+  top: -0.4rem;
+  left: 0;
+}
+
+.boton-menu-lineas::after {
+  position: absolute;
+  top: 0.4rem;
+  left: 0;
+}
+
+/* El menú desplegado es una lista apilada a pantalla completa en la barra.
+   Sin JavaScript el botón no hace nada, y en ese caso la lista sigue
+   visible: el CSS de la barra móvil esconde los enlaces, pero el atributo
+   hidden que aplica el script es lo único que los saca. */
+.menu {
+  display: none;
+  flex-basis: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-block: 0.75rem;
+}
+
+.menu.abierto {
+  display: flex;
+}
+
+.menu-lista {
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.idioma {
+  border-left: 0;
+  padding-left: 0;
+}
+
+@media (min-width: 48rem) {
+  .boton-menu {
+    display: none;
+  }
+
+  .menu {
+    display: flex;
+    flex-basis: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.25rem;
+    padding-block: 0;
+  }
+
+  .menu-lista {
+    flex-direction: row;
+    gap: 1.25rem;
+  }
+
+  .idioma {
+    border-left: 1px solid var(--borde-campo);
+    padding-left: 1.25rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Botón
+
+   Es un subrayado con borde, no un relleno. La razón de que el estado de
+   reposo no lleve fondo es que un sitio de una profesional que quiere que la
+   lean clientes no debe gritar en la primera pantalla; el borde da la
+   presencia sin el ruido, y el relleno aparece al pasar por encima.
+   -------------------------------------------------------------------------- */
+
+.boton {
+  display: inline-block;
+  padding: 0.85rem 1.75rem;
+  border: 1.5px solid var(--acento);
+  border-radius: 2px;
+  color: var(--acento);
+  background: transparent;
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.boton:hover,
+.boton:focus-visible {
+  background: var(--acento);
+  color: var(--fondo);
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.boton:disabled:hover {
+  background: transparent;
+  color: var(--acento);
+}
+
+.enlace-suave {
+  color: var(--acento);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Portada
+   -------------------------------------------------------------------------- */
+
+/* Todas las pistas de rejilla usan minmax(0, 1fr) y no 1fr. 1rf es
+   abreviatura de minmax(auto, 1fr), y el minimo auto es el tamano del
+   contenido: con eso, un texto largo sin cortes ensancha la pista entera
+   y overflow-wrap no llega a actuar, porque la caja ya es ancha. Con el
+   minimo en cero, el corte de linea ocurre dentro de la pista. */
+.portada {
+  padding-block: clamp(3rem, 9vw, 5.5rem) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+
+.portada h1 {
+  margin-bottom: 0.25rem;
+}
+
+.inicio-oficio {
+  font-family: var(--serif);
+  font-variation-settings: var(--fraunces-axes);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 400;
+  color: var(--acento);
+  margin-block: 0 1.5rem;
+}
+
+.inicio-resumen {
+  font-size: 1.125rem;
+  max-width: 34rem;
+  color: var(--texto);
+  margin-block: 0 2rem;
+}
+
+.inicio-acciones {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-block: 0 1.5rem;
+}
+
+.inicio-lugar {
+  font-size: 0.9375rem;
+  color: var(--texto-suave);
+  margin-block: 0;
+  letter-spacing: 0.01em;
+}
+
+/* La franja panorámica va a ancho completo de la ventana, no del contenedor:
+   es lo que da el aire de la primera pantalla. object-fit: cover recorta
+   para no deformar, y el alto se fija con clamp para que en el móvil siga
+   siendo una franja y no se convierta en un bloque cuadrado. */
+.portada-franja {
+  grid-column: 1 / -1;
+  margin: 0 calc(50% - 50vw);
+}
+
+.portada-franja img {
+  width: 100%;
+  height: clamp(9rem, 22vw, 15rem);
+  object-fit: cover;
+  object-position: center 40%;
+}
+
+/* --------------------------------------------------------------------------
+   Servicios
+   -------------------------------------------------------------------------- */
+
+.servicios {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+
+.servicio {
+  /* El borde inferior de 2 px en el acento marca el servicio sin necesidad de
+     una tarjeta con fondo, sombra ni esquinas: la dirección es sobria y las
+     tres cosas quitan peso. */
+  border-bottom: 2px solid var(--acento);
+  padding-bottom: 1.25rem;
+}
+
+.servicio h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.servicio p {
+  margin-block: 0;
+  color: var(--texto-suave);
+  max-width: 34rem;
+}
+
+@media (min-width: 48rem) {
+  .servicios {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 68rem) {
+  .servicios {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Formulario
+   -------------------------------------------------------------------------- */
+
+#formulario {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  max-width: 46rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.campo label {
+  font-size: 0.875rem;
+  color: var(--texto-suave);
+}
+
+.obligatorio {
+  color: var(--acento);
+}
+
+.opcional {
+  color: var(--texto-suave);
+  font-weight: 400;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  padding: 0.7rem 0.9rem;
+  /* El borde del campo no usa --borde: con 1.25:1 no llega al 3:1 que WCAG
+     1.4.11 exige, y en un área de escritura el contorno es lo único que dice
+     dónde termina el campo. */
+  border: 1px solid var(--borde-campo);
+  border-radius: 2px;
+  background: var(--fondo-campo);
+  color: var(--texto);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  min-width: 0;
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 8rem;
+}
+
+/* El enfoque se marca con el anillo global, más el cambio de color del
+   borde: el color solo no basta, porque un campo con el mismo fondo y un
+   borde del mismo color se ven idénticos a uno enfocado si no hay otra
+   señal. */
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  border-color: var(--acento);
+}
+
+.campo :is(input, select, textarea):user-invalid {
+  border-color: var(--error);
+}
+
+/* El campo trampa se saca de la vista con posicionamiento, nunca con
+   display: none ni visibility: hidden. Netlify solo descarta el envío
+   cuando el campo no está en la página, y muchos robots completan
+   correctamente los campos que están ocultos con esas dos propiedades. */
+.trampa {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.envio {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+}
+
+/* min-height para que el texto de estado no empuje el resto de la maqueta al
+   aparecer. Un formulario que salta al confirmar el envío molesta más que un
+   formulario que se queda quieto. */
+.form-estado {
+  margin-block: 0;
+  min-height: 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--texto-suave);
+}
+
+.form-estado:empty {
+  min-height: 0;
+}
+
+.form-estado.error {
+  color: var(--error);
+}
+
+.form-estado.exito {
+  color: var(--acento);
+  font-weight: 600;
+}
+
+@media (min-width: 40rem) {
+  #formulario {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* La fecha límite y los comentarios ocupan la fila entera. Con un nombre
+     de usuario o un correo en una columna y medio, el campo se estrecha
+     hasta que el texto ya no entra. */
+  .campo-ancho,
+  #fecha {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Sobre mí
+   -------------------------------------------------------------------------- */
+
+#sobre-mi {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem 3rem;
+  align-items: start;
+}
+
+.retrato {
+  margin: 0;
+}
+
+.retrato img {
+  width: 100%;
+  max-width: 11rem;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 50%;
+  /* El círculo necesita un borde: sin él, el recorte redondeado deja el pelo
+     recortado contra el fondo de la página. */
+  border: 3px solid var(--acento);
+}
+
+.sobre-mi-texto p {
+  max-width: var(--ancho-texto);
+  line-height: 1.7;
+  margin-block: 0 1.25rem;
+}
+
+@media (min-width: 48rem) {
+  #sobre-mi {
+    grid-template-columns: 14rem minmax(0, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Credenciales
+   -------------------------------------------------------------------------- */
+
+.credenciales {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+}
+
+.credencial h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.credencial dl {
+  margin: 0 0 1.25rem;
+}
+
+.credencial dl:last-child {
+  margin-bottom: 0;
+}
+
+.credencial dt {
+  font-weight: 600;
+}
+
+.credencial dd {
+  margin: 0 0 0.75rem;
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+.credencial dd:last-child {
+  margin-bottom: 0;
+}
+
+.credencial .detalle {
+  max-width: 34rem;
+  margin-top: 0.35rem;
+}
+
+.en-curso {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--acento);
+  border: 1px solid var(--acento);
+  border-radius: 2px;
+  padding: 0.2rem 0.55rem;
+  margin-block: 0 1rem;
+}
+
+/* El Traductorado es el único bloque en curso, y un margen lateral lo
+   distingue sin necesidad de una etiqueta de advertencia, que sugeriría un
+   problema donde lo que hay es una fecha. */
+.credencial-en-curso {
+  border-left: 3px solid var(--acento);
+  padding-left: 1.25rem;
+}
+
+@media (min-width: 48rem) {
+  .credenciales {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  /* El rótulo de cada credencial apila la línea gruesa sobre la fecha en
+     lugar de ponerlas en fila. En una columna de un tercio del ancho de
+     palabras por línea, que es peor que apilarlas. */
+     palabras por línea, que es peor que apilarlas. */
+  .credencial dt {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Pie
+   -------------------------------------------------------------------------- */
+
+footer {
+  border-top: 1px solid var(--borde);
+  background: var(--fondo-campo);
+  padding-block: clamp(2.5rem, 6vw, 4rem);
+}
+
+.pie-interior {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.pie-contacto,
+.pie-lugar,
+.pie-legal {
+  margin-block: 0;
+}
+
+.pie-contacto {
+  line-height: 1.9;
+}
+
+.pie-lugar {
+  color: var(--texto-suave);
+  font-size: 0.9375rem;
+}
+
+.pie-legal {
+  color: var(--texto-suave);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 48rem) {
+  .pie-interior {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .pie-lugar {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+
+  .pie-legal {
+    grid-column: 1 / -1;
+  }
+}
