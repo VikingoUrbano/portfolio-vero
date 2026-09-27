@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Verificación</title>
+<style>
+  body { font: 14px/1.5 monospace; margin: 0; padding: 1rem; background: #FBF9F6; }
+  #resultado { white-space: pre-wrap; }
+  .marco { border: 0; height: 900px; }
+</style>
+</head>
+<body>
+<pre id="resultado">ejecutando…</pre>
+
+<!--
+  Lo ejecuta Firefox headless con --screenshot, que captura en cuanto se
+  dispara load y despues termina el proceso. De ahi salen las dos decisiones
+  que gobiernan este archivo:
+
+  1. Los iframes se escriben con document.write durante el analisis, no con
+     appendChild. Un iframe insertado despues no retrasa el evento load; uno
+     escrito durante el analisis si. Asi, cuando load se dispara, las paginas
+     que hay que medir ya estan cargadas y renderizadas.
+
+  2. El manejador de load es completamente SINCRONO, sin un solo await.
+     En cuanto un async cede el control en el primer await, Firefox alcanza a
+     tomar la captura y termina el proceso, y el resultado se pierde entero
+     sin que quede rastro. Por eso toda la red va por XMLHttpRequest
+     sincrono, que bloquea el hilo principal hasta que el servidor responde
+     y no deja que el proceso muera a mitad de una comprobacion.
+
+  Uso:
+    /tools/check.html?p=/es/index.html,/en/index.html&w=320,360,768
+
+  Consecuencia aceptada: no hay margen para que las fuentes terminen de
+  cargar, asi que la medicion de maqueta se hace con la tipografia de
+  reserva. El desbordamiento horizontal lo determinan los anchos de caja, no
+  el ancho de los glifos, asi que el resultado sigue siendo valido; lo que
+  no cubre es el ajuste de lineas dentro de un parrafo.
+-->
+
+<script>
+window.__CHECK__ = (function () {
+  const params  = new URLSearchParams(location.search);
+  const paginas = (params.get("p") || "/es/index.html").split(",").filter(Boolean);
+  const anchos  = (params.get("w") || "360").split(",").map(Number).filter((n) => n > 0);
+
+  document.write(paginas.map((ruta) => anchos.map((ancho) =>
+    '<iframe class="marco" style="width:' + ancho + 'px" data-ruta="' + ruta +
+    '" data-ancho="' + ancho + '" src="' + ruta.replace(/"/g, "") + '"></iframe>'
+  ).join("\n")).join("\n"));
+
+  return { paginas, anchos };
+})();
+</script>
+
+<script>
+const lineas = [];
+const ok = (n, c, d) => lineas.push((c ? "PASS " : "FAIL ") + n + (d ? " :: " + d : ""));
+
+/** Peticion sincrona. Devuelve el cuerpo, o null si no hay respuesta 2xx. */
+function pedir(url) {
+  const x = new XMLHttpRequest();
+  try {
+    x.open("GET", url, false);
+    x.send();
+    return x.status >= 200 && x.status < 300 ? x.responseText : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/** Estructura, accesibilidad y recursos locales, sobre el documento analizado. */
+function revisarDocumento(ruta) {
+  const p = (n) => ruta + " :: " + n;
+  const bruto = pedir(ruta);
+  if (bruto === null) { ok(p("la pagina responde"), false, "sin respuesta 2xx"); return; }
+
+  const base = new URL(ruta, location.origin);
+  const d = new DOMParser().parseFromString(bruto, "text/html");
+
+  const lang = d.documentElement.lang;
+  ok(p("lang declarado"), lang === "es" || lang === "en", lang || "(vacio)");
+
+  const h1 = d.querySelectorAll("h1");
+  ok(p("un solo h1"), h1.length === 1, String(h1.length));
+  ok(p("h1 con texto"), !!(h1[0] && h1[0].textContent.trim()));
+
+  const niveles = [].slice.call(d.querySelectorAll("h1,h2,h3,h4,h5,h6"))
+    .map((e) => +e.tagName[1]);
+  ok(p("los encabezados no saltan de nivel"),
+     niveles.every((n, i) => i === 0 || n - niveles[i - 1] <= 1), niveles.join(">"));
+
+  const ids = [].slice.call(d.querySelectorAll("[id]")).map((e) => e.id);
+  ok(p("sin identificadores repetidos"), new Set(ids).size === ids.length);
+
+  const imgs = [].slice.call(d.querySelectorAll("img"));
+  ok(p("todo img tiene alt"), imgs.every((i) => i.hasAttribute("alt")));
+  ok(p("todo img tiene width y height"),
+     imgs.every((i) => i.hasAttribute("width") && i.hasAttribute("height")));
+
+  const controles = [].slice.call(d.querySelectorAll("input:not([type=hidden]), textarea, select"));
+  const sinLabel = controles.filter(
+    (c) => !(c.id && d.querySelector('label[for="' + c.id + '"]')));
+  ok(p("todo control tiene label asociado"), sinLabel.length === 0,
+     sinLabel.map((c) => c.name || c.id || c.tagName).join(","));
+
+  ok(p("sin enlaces vacios"),
+     ![].slice.call(d.querySelectorAll("a")).some((a) => !a.getAttribute("href")));
+  ok(p("ningun target=_blank sin rel=noopener"),
+     [].slice.call(d.querySelectorAll('a[target="_blank"]'))
+       .every((a) => (a.getAttribute("rel") || "").includes("noopener")));
+
+  ok(p("todo boton declara type"),
+     [].slice.call(d.querySelectorAll("button")).every((b) => b.getAttribute("type")));
+
+  if (/\/index\.html$/.test(ruta)) {
+    const alts = [].slice.call(d.querySelectorAll('link[rel="alternate"][hreflang]'))
+      .map((l) => l.getAttribute("hreflang"));
+    ok(p("declara es, en y x-default"),
+       ["es", "en", "x-default"].every((x) => alts.includes(x)), alts.join(","));
+  }
+
+  const refs = [].slice.call(d.querySelectorAll("[href],[src]"))
+    .map((e) => e.getAttribute("href") || e.getAttribute("src"))
+    .filter((v) => v && !/^(https?:|mailto:|tel:|#|data:)/.test(v));
+  const rotas = [];
+  for (const r of refs) {
+    const destino = new URL(r, base).pathname;
+    const final = destino.endsWith("/") ? destino + "index.html" : destino;
+    if (pedir(final) === null) rotas.push(r);
+  }
+  ok(p("todos los recursos locales existen"), rotas.length === 0, rotas.join("; "));
+}
+
+/** Maquetacion real, medida en un iframe ya renderizado. */
+function revisarMaqueta(marco, ancho, ruta) {
+  const p = (n) => ruta + " @" + ancho + " :: " + n;
+  let doc = null;
+  try { doc = marco.contentDocument; } catch (e) { doc = null; }
+  if (!doc || !doc.documentElement) { ok(p("el iframe no cargo"), false); return; }
+  const raiz = doc.documentElement;
+
+  ok(p("sin desbordamiento horizontal"),
+     raiz.scrollWidth <= raiz.clientWidth + 1,
+     raiz.scrollWidth + " > " + raiz.clientWidth);
+
+  const fuera = [].slice.call(doc.querySelectorAll("body *"))
+    .filter((e) => e.getBoundingClientRect().right > ancho + 1)
+    .slice(0, 4)
+    .map((e) => e.tagName + "." + (e.className || "(sin clase)"));
+  ok(p("ningun elemento se sale del viewport"), fuera.length === 0, fuera.join("; "));
+
+  ok(p("la pagina renderiza contenido"), raiz.scrollHeight > 400, String(raiz.scrollHeight));
+}
+
+window.addEventListener("load", function () {
+  const c = window.__CHECK__;
+  for (const ruta of c.paginas) revisarDocumento(ruta);
+
+  const marcos = [].slice.call(document.querySelectorAll("iframe"));
+  for (const marco of marcos) {
+    revisarMaqueta(marco, parseInt(marco.dataset.ancho, 10), marco.dataset.ruta);
+  }
+
+  const resumen = lineas.join("\n");
+  document.getElementById("resultado").textContent = resumen;
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "/__resultado", false);
+  xhr.send("RESULTADO\n" + resumen + "\nFIN");
+});
+</script>
+</body>
+</html>

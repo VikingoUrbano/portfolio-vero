@@ -1,0 +1,11 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>probe</title></head>
+<body><h1>probe</h1>
+<img src="/tools/_missing.png" width="10" height="10" alt="rota">
+<script>
+window.addEventListener("load", function () {
+  var x = new XMLHttpRequest();
+  x.open("POST", "/__resultado", false);
+  x.send("RESULTADO\nPASS probe llego\nFIN");
+});
+</script>
+</body></html>

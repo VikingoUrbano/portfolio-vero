@@ -22,3 +22,6 @@ Thumbs.db
 
 *.log
 npm-debug.log*
+
+# Perfiles de Firefox que crea el verificador
+ff-perfil-verif-*/
