@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verónica Ramírez · Traductora e intérprete de inglés</title>
+<meta name="description" content="Traductora e intérprete de inglés, con certificación C2 de la University of Michigan. Traducción general, subtitulado, localización, textos técnicos y científicos, traducción jurada e interpretación entre español e inglés.">
+<link rel="canonical" href="https://veronicaramirez.netlify.app/es/">
+<link rel="alternate" hreflang="es" href="https://veronicaramirez.netlify.app/es/">
+<link rel="alternate" hreflang="en" href="https://veronicaramirez.netlify.app/en/">
+<link rel="alternate" hreflang="x-default" href="https://veronicaramirez.netlify.app/es/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_AR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:site_name" content="Verónica Ramírez">
+<meta property="og:title" content="Verónica Ramírez · Traductora e intérprete de inglés">
+<meta property="og:description" content="Traducción, subtitulado, localización e interpretación entre español e inglés. Certificación C2 en inglés por la University of Michigan.">
+<meta property="og:url" content="https://veronicaramirez.netlify.app/es/">
+<meta property="og:image" content="https://veronicaramirez.netlify.app/assets/img/social-es.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/layout.css">
+</head>
+
+<body>
+
+<a class="salto" href="#inicio">Saltar al contenido principal</a>
+
+<nav class="barra" aria-label="Principal">
+  <div class="barra-interior">
+    <a class="marca" href="#inicio">Verónica Ramírez</a>
+
+    <button class="boton-menu" type="button" aria-expanded="false" aria-controls="menu">
+      <span class="visualmente-oculto">Abrir el menú</span>
+      <span class="boton-menu-lineas" aria-hidden="true"></span>
+    </button>
+
+    <div class="menu" id="menu">
+      <ul class="menu-lista">
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#presupuesto">Presupuesto</a></li>
+        <li><a href="#sobre-mi">Sobre mí</a></li>
+        <li><a href="#credenciales">Credenciales</a></li>
+      </ul>
+      <a class="idioma" href="/en/" hreflang="en" lang="en">English</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<section id="inicio" class="portada">
+  <h1>Verónica Ramírez</h1>
+  <p class="inicio-oficio">Traductora e intérprete de inglés</p>
+
+  <p class="inicio-resumen">Traducción, subtitulado, localización e interpretación entre español e
+  inglés. Certificación C2 en inglés por la University of Michigan y cuarto año del Traductorado
+  Público, Literario y Científico-Técnico de Inglés.</p>
+
+  <p class="inicio-acciones">
+    <a class="boton" href="#presupuesto">Solicitar presupuesto</a>
+    <a class="enlace-suave" href="mailto:vero22ramm@gmail.com">Escríbime</a>
+  </p>
+
+  <p class="inicio-lugar">Rosario, Santa Fe, Argentina</p>
+</section>
+
+<section id="servicios">
+  <h2>Servicios</h2>
+
+  <div class="servicios">
+    <article class="servicio">
+      <h3>Traducción general</h3>
+      <p>Textos generales entre español e inglés, con revisión de estilo y adaptación al público
+      destinatario: artículos, correspondencia, material de marketing y documentación.</p>
+    </article>
+
+    <article class="servicio">
+      <h3>Subtitulado y localización</h3>
+      <p>Subtitulado de video y localización de contenido audiovisual y digital, con ajuste de
+      tiempos, consistencia de tono y adaptación de referencias culturales.</p>
+    </article>
+
+    <article class="servicio">
+      <h3>Traducción técnica y científica</h3>
+      <p>Textos técnicos, científicos y de investigación, con investigación terminológica y
+      consistencia de la terminología del sector a lo largo de todo el documento.</p>
+    </article>
+
+    <article class="servicio">
+      <h3>Traducción jurada</h3>
+      <p>Traducciones juradas para los trámites legales, académicos y administrativos que las
+      requieren.</p>
+    </article>
+
+    <article class="servicio">
+      <h3>Interpretación</h3>
+      <p>Interpretación simultánea y consecutiva en español e inglés.</p>
+    </article>
+  </div>
+</section>
+
+<section id="presupuesto">
+  <h2>Solicitar presupuesto</h2>
+
+  <p class="seccion-intro">Contame qué necesitás y te respondo con una propuesta en un plazo de dos
+  días hábiles. Los campos marcados con un asterisco son obligatorios; el volumen y la fecha límite
+  son opcionales.</p>
+
+  <!-- El campo trampa va primero a propósito, pero con estas cuatro
+       protecciones: sin autocomplete, fuera de la pestaña, oculto a la
+       tecnología de asistencia y tamaño cero. Un autocompletador del navegador
+       que rellene un campo trampa descarta la solicitud entera, y eso se
+       lleva por delante a un cliente real, no a un robot. -->
+  <p class="trampa" aria-hidden="true">
+    <label for="sitio-web">No completar este campo</label>
+    <input type="text" id="sitio-web" name="sitio-web" tabindex="-1" autocomplete="off">
+  </p>
+
+  <form name="presupuesto"
+        method="POST"
+        action="/es/confirmacion.html"
+        data-netlify="true"
+        netlify-honeypot="sitio-web"
+        id="formulario">
+
+    <input type="hidden" name="form-name" value="presupuesto">
+    <input type="hidden" name="idioma" value="es">
+
+    <div class="campo">
+      <label for="nombre">Nombre <span class="obligatorio" aria-hidden="true">*</span></label>
+      <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+    </div>
+
+    <div class="campo">
+      <label for="email">Correo electrónico <span class="obligatorio" aria-hidden="true">*</span></label>
+      <input type="email" id="email" name="email" autocomplete="email" required>
+    </div>
+
+    <div class="campo">
+      <label for="servicio">Tipo de servicio <span class="obligatorio" aria-hidden="true">*</span></label>
+      <select id="servicio" name="servicio" required>
+        <option value="" disabled selected>Elegí un servicio</option>
+        <option value="general">Traducción general</option>
+        <option value="subtitulado">Subtitulado y localización</option>
+        <option value="tecnica">Traducción técnica y científica</option>
+        <option value="jurada">Traducción jurada</option>
+        <option value="interpretacion">Interpretación</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="volumen">Volumen aproximado <span class="opcional">(opcional)</span></label>
+      <select id="volumen" name="volumen">
+        <option value="" selected>Sin especificar</option>
+        <option value="hasta-1000">Hasta 1.000 palabras</option>
+        <option value="1000-5000">Entre 1.000 y 5.000 palabras</option>
+        <option value="5000-20000">Entre 5.000 y 20.000 palabras</option>
+        <option value="20000-100000">Entre 20.000 y 100.000 palabras</option>
+        <option value="mas-100000">Más de 100.000 palabras</option>
+        <option value="no-se">No lo sé todavía</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="fecha">Fecha límite <span class="opcional">(opcional)</span></label>
+      <input type="date" id="fecha" name="fecha">
+    </div>
+
+    <div class="campo campo-ancho">
+      <label for="comentarios">Comentarios <span class="opcional">(opcional)</span></label>
+      <textarea id="comentarios" name="comentarios" rows="6"
+                placeholder="Contexto, plazos, formato del archivo de origen, lo que necesites que sepa."></textarea>
+    </div>
+
+    <div class="envio">
+      <button type="submit" class="boton">Enviar solicitud</button>
+      <p class="form-estado" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+</section>
+
+<section id="sobre-mi">
+  <h2>Sobre mí</h2>
+
+  <figure class="retrato">
+    <img src="/assets/img/veronica-400.jpg"
+         alt="Verónica Ramírez"
+         width="400" height="400"
+         loading="lazy" decoding="async">
+  </figure>
+
+  <div class="sobre-mi-texto">
+    <p>Soy traductora e intérprete de inglés. Cursé el cuarto año del Traductorado Público,
+    Literario y Científico-Técnico de Inglés del Instituto Belgrano, y tengo certificación C2 en
+    inglés de la University of Michigan.</p>
+
+    <p>Antes de dedicarme a la traducción pasé seis años estudiando inglés americano en
+    A.R.I.C.A.N.A., y un año dando clases a hablantes nativos de español. Esa parte de enseñar me
+    dejó algo que se sigue notando en el trabajo: una traducción no se entiende porque esté bien
+    escrita, se entiende porque alguien la pueda usar.</p>
+
+    <p>Me interesan los idiomas por el puente que levantan entre las culturas. Traducir no es
+    cambiar una palabra por otra: es lograr que un texto signifique lo mismo para otra persona, en
+    otro contexto. Eso es el trabajo.</p>
+  </div>
+</section>
+
+<section id="credenciales">
+  <h2>Credenciales</h2>
+
+  <div class="credenciales">
+
+    <div class="credencial">
+      <h3>Certificaciones</h3>
+      <dl>
+        <dt>ECPE · C2 en inglés</dt>
+        <dd>University of Michigan · diciembre 2024 – febrero 2025</dd>
+
+        <dt>ECCE · C1 en inglés</dt>
+        <dd>University of Michigan · diciembre 2023 – febrero 2024</dd>
+      </dl>
+    </div>
+
+    <div class="credencial credencial-en-curso">
+      <h3>Formación</h3>
+      <p class="en-curso">En curso, con fecha de finalización</p>
+      <dl>
+        <dt>Traductorado Público, Literario y Científico-Técnico de Inglés</dt>
+        <dd>Instituto Belgrano · cuarto año · finalización en diciembre de 2026</dd>
+      </dl>
+
+      <dl>
+        <dt>Alemán · A1</dt>
+        <dd>Ikaruga Escuela de Idiomas</dd>
+
+        <dt>Curso de Lengua Inglesa Americana</dt>
+        <dd>A.R.I.C.A.N.A. · 2007 – 2013</dd>
+      </dl>
+    </div>
+
+    <div class="credencial">
+      <h3>Experiencia</h3>
+      <dl>
+        <dt>Profesor de inglés</dt>
+        <dd>Alianza · enero – diciembre 2024</dd>
+        <dd class="detalle">Diseño e impartición de clases adaptadas a hablantes nativos
+        de español, planificación de programas personalizados por nivel según el MCER, y
+        acompañamiento del progreso de cada estudiante.</dd>
+      </dl>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer id="contacto">
+  <div class="pie-interior">
+    <p class="pie-contacto">
+      <a href="mailto:vero22ramm@gmail.com">vero22ramm@gmail.com</a><br>
+      <a href="tel:+543417180942">341 718-0942</a><br>
+      <a href="https://www.linkedin.com/in/veronica-p-ramirez" rel="noopener" target="_blank">LinkedIn</a>
+    </p>
+    <p class="pie-lugar">Rosario, Santa Fe, Argentina</p>
+    <p class="pie-legal">Verónica Ramírez · Traductora e intérprete de inglés</p>
+  </div>
+</footer>
+
+<script src="/assets/main.js" defer></script>
+</body>
+</html>
