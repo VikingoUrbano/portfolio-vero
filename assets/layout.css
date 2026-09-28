@@ -408,12 +408,23 @@ main > section h2 {
   margin-bottom: 0.25rem;
 }
 
+/* Al centro, como el nombre que tiene arriba: los dos son el encabezado de la
+   portada, uno con el serif del h1 y otro con el del subtítulo, y si uno queda a
+   la izquierda y el otro al centro la portada se ve como si le faltara una
+   línea. El resumen, los botones y el lugar siguen a la izquierda, que es lo
+   que va inmediatamente después del bloque de título.
+
+   No lleva max-width ni necesita uno: son 33 caracteres en castellano y 46 en
+   inglés, o sea menos de una línea a 864 px, de modo que centrar no lo mueve de
+   ancho, solo cambia dónde se apoya. En el móvil sí se parte, y ahí text-wrap lo
+   resuelve solo: p hereda text-wrap: pretty de tokens.css. */
 .inicio-oficio {
   font-family: var(--serif);
   font-variation-settings: var(--fraunces-axes);
   font-size: clamp(1.25rem, 3vw, 1.75rem);
   font-weight: 400;
   color: var(--acento);
+  text-align: center;
   margin-block: 0 1.5rem;
 }
 
