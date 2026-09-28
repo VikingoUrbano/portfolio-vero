@@ -71,10 +71,27 @@ main > section h2 {
   margin-bottom: 1.5rem;
 }
 
+/* El párrafo de entrada de cada sección se mantiene corto de ancho a propósito:
+   es un texto de una o dos frases y a 608 px se lee de un vistazo. */
 .seccion-intro {
   max-width: var(--ancho-texto);
   color: var(--texto-suave);
   margin-bottom: 2rem;
+}
+
+/* El de la sección de presupuesto sí va aJustificado y a lo ancho de la
+   sección, como el bloque de Sobre mí. La clase es la misma que el de
+   Credenciales, que se queda angosto: aquí lo que seJustifica es un texto que
+   anuncia lo que viene debajo, y ahí importa que la línea termine de leerse
+   entera antes de bajar al formulario.
+
+   max-width: none anula el --ancho-texto de arriba, y el selector con id gana
+   en especificidad. hyphens: auto viene con lo mismo que en Sobre mí: sin
+   partición de palabras, un texto justificado abre ríos de blanco. */
+#presupuesto .seccion-intro {
+  max-width: none;
+  text-align: justify;
+  hyphens: auto;
 }
 
 /* --------------------------------------------------------------------------
@@ -379,10 +396,22 @@ main > section h2 {
   margin-block: 0 1.5rem;
 }
 
+/* El resumen de la portada va a lo ancho de la sección y justificado, como el
+   bloque de Sobre mí. El tope de 34rem que tenía antes era una medida de
+   lectura: 544 px, que es lo que en realidad pide un texto corrido. Se quita
+   porque el resto de la portada no lo tiene —el subtítulo, el lugar y el
+   nombre ocupan los 864 px de la caja— y con este tope el párrafo era lo único
+   que se detenía antes, en medio de una página por lo demás alineada a un
+   canto.
+
+   hyphens: auto por lo mismo que en Sobre mí: justificado sin partición de
+   palabras abre ríos. Firefox usa el diccionario que declara <html lang>, y las
+   dos páginas lo declaran. */
 .inicio-resumen {
   font-size: 1.125rem;
-  max-width: 34rem;
   color: var(--texto);
+  text-align: justify;
+  hyphens: auto;
   margin-block: 0 2rem;
 }
 
