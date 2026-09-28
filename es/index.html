@@ -322,23 +322,29 @@
 <footer id="contacto">
   <div class="pie-interior">
     <p class="pie-contacto">
-      <!-- Los dos iconos son SVG en linea y no una fuente de iconos: el sitio no
-           tiene dependencias y no va a tener una. Los dos van con trazo y no
-           rellenos, y con el mismo grosor de trazo, para que se lean como
-           pareja. currentColor hace que hereden el color del enlace, de modo
-           que en el HTML no hay ningun color escrito.
+      <!-- Los tres iconos son SVG en linea y no una fuente de iconos: el sitio no
+           tiene dependencias y no va a tener una. Los tres van con trazo y sin
+           relleno, y con el mismo grosor, para que se lean como un juego y no
+           como tres dibujos sueltos. currentColor hace que hereden el color del
+           enlace, de modo que en el HTML no hay ningun color escrito.
 
-           El de WhatsApp es un globo de conversacion y no el logotipo de la
-           marca: la marca es de su titular y no hace falta copiarla. La palabra
-           que va al lado dice que es, y por eso los dos llevan aria-hidden en
-           lugar de un nombre accesible: un icono que ya esta nombrado al lado
-           solo se repite en voz alta.
+           Los de WhatsApp y LinkedIn no son los logotipos de las marcas: esas
+           marcas son de sus titulares y no hace falta copiarlas. El primero es
+           un globo de conversacion. El segundo son las mismas letras, pero
+           dentro de un circulo y no del cuadrado que usa la marca, que es
+           justo la parte que hace reconocible el logotipo. Con el circulo los
+           tres iconos se pueden poner en fila sin que el de LinkedIn parezca
+           un logotipo arrancado de la pagina de otra empresa.
 
-           El numero del enlace es un texto de relleno. Poner el real aqui es
-           una linea. -->
+           Los tres llevan aria-hidden en lugar de un nombre accesible porque la
+           palabra que va al lado ya dice que es cada enlace. Un icono que ya
+           esta nombrado al lado solo se repite en voz alta.
+
+           El numero del enlace de WhatsApp es un texto de relleno. Poner el
+           real aqui es una linea. -->
       <a href="https://api.whatsapp.com/send?phone=XXXXXXXXXXX" rel="noopener" target="_blank"><svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3.4c-4.8 0-8.7 3.5-8.7 7.9 0 1.55.45 3 1.24 4.24L3.3 20.4l5.05-1.2a8.6 8.6 0 0 0 3.65.79c4.8 0 8.7-3.5 8.7-7.9S16.8 3.4 12 3.4Z"/><path d="M9.2 9.4h5.6M9.2 13h3.6"/></svg>WhatsApp</a><br>
       <a href="mailto:vero22ramm@gmail.com"><svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2.75" y="5.25" width="18.5" height="13.5" rx="2"/><path d="M3.5 7.8 12 13.9 20.5 7.8"/></svg>Email</a><br>
-      <a href="https://www.linkedin.com/in/veronica-p-ramirez" rel="noopener" target="_blank">LinkedIn</a>
+      <a href="https://www.linkedin.com/in/veronica-p-ramirez" rel="noopener" target="_blank"><svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.25"/><circle cx="7.8" cy="8.15" r="1.1" fill="currentColor" stroke="none"/><path d="M7.8 10.9v6.15"/><path d="M10.9 17.05v-3.3a2.65 2.65 0 0 1 5.3 0v3.3"/></svg>LinkedIn</a>
     </p>
     <p class="pie-lugar">Rosario, Santa Fe, Argentina</p>
     <p class="pie-legal">Verónica Ramírez · Traductora e intérprete de inglés</p>
