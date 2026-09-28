@@ -94,6 +94,23 @@ propio de Netlify que el validador no conoce porque no forma parte de la
 especificación de HTML. Si se quita para callar al validador, se desactiva el
 filtro de spam y el sitio empieza a recibir robobots.
 
+Validando la URL en vivo en vez del archivo, sale un segundo aviso distinto:
+
+```
+Stray start tag "script". From line 335, column 1
+Cannot recover after last error. Any further errors will be ignored.
+```
+
+**Tampoco es un error, y es menos nuestro todavía.** Netlify añade al final de
+cada página, después del `</html>`, su propio `<script async src="/.netlify/scripts/hud">`
+para el HUD de su panel. Los dos archivos del repositorio terminan limpios en
+`</body></html>`; para verlo, `git show HEAD:es/index.html | tail -3`. El aviso
+desaparece en cuanto se valida el archivo en local en vez de la URL.
+
+Los dos avisos son cosas que el validador no puede conocer: uno porque el
+atributo es de Netlify, el otro porque la etiqueta la agrega Netlify. Lo único
+que produce un error real es algo escrito en el repositorio.
+
 ## Editar el contenido
 
 - **Los textos** están en `es/index.html` y `en/index.html`. Si se cambia uno
