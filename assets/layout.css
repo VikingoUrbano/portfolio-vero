@@ -67,25 +67,35 @@ main > section + section::before {
   border-top: 1px solid var(--borde-fino);
 }
 
-/* Los títulos de sección van centrados; el texto que hay debajo sigue a la
-   izquierda. No es una contradicción: es el patrón editorial de siempre, con
-   el título marcando el corte y el cuerpo quedándose alineado a un canto para
-   que las secciones largas se lean contra la misma línea vertical.
+/* Los títulos van centrados y el texto que hay debajo sigue a la izquierda. No
+   es una contradicción: es el patrón editorial de siempre, con el título
+   marcando el corte y el cuerpo quedándose alineado a un canto para que las
+   secciones largas se lean contra la misma línea vertical.
 
-   El selector es main > section h2 y no un h2 suelto, así que si algún día
-   aparece un título dentro de una tarjeta o de la línea de tiempo, ese no se
-   centra. Los diez del sitio son los cinco títulos de sección de cada idioma,
-   y todos entran por acá. El h1 de la portada no entra, a propósito: es el
-   nombre y se queda a la izquierda, con el subtítulo al lado.
+   Los selectores son main > section y no un h1 o un h2 sueltos, para que si
+   algún día aparece un título dentro de una tarjeta o dentro de la línea de
+   tiempo, ese no se centre sin que nadie lo haya pedido.
 
-   text-wrap: balance reparte por igual las palabras de un título que se parte
-   en dos. En escritorio los cinco entran en una línea y no se nota, pero
+   Consecuencia que conviene tener presente: entran por acá el h1 de la portada,
+   los cinco h2 de sección de cada idioma y también el h1 de las dos páginas de
+   confirmación, que son un section.simple. Queda fuera el h1 de la raíz, el de
+   la página que elige idioma: ese es hijo directo de main y no de ninguna
+   sección, y sigue a la izquierda como siempre. No es que esté centradito por
+   otra regla: el div.eleccion de esa página va después del h1, así que nunca
+   lo alcanzó a centrar.
+
+   No se repite text-wrap: balance, que es lo que reparte por igual las palabras
+   de un título que se parte en dos, porque ya viene en la regla de h1 a h4 de
+   tokens.css. En escritorio los títulos entran en una línea y no se nota, pero
    "Solicitar presupuesto" y "How we work" se parten en el móvil, y ahí es
-   justo donde importa: sin esto, la última línea queda sola y descolgada. */
+   justo donde importa: sin balance la última palabra queda sola. */
+main > section h1,
+main > section h2 {
+  text-align: center;
+}
+
 main > section h2 {
   margin-bottom: 1.5rem;
-  text-align: center;
-  text-wrap: balance;
 }
 
 /* El párrafo de entrada de cada sección se mantiene corto de ancho a propósito:
