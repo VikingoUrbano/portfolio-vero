@@ -921,6 +921,20 @@ footer {
   line-height: 1.9;
 }
 
+/* Los iconos de los enlaces del pie son SVG en línea, no una fuente de iconos:
+   el sitio no tiene dependencias y no va a tener una. El tamaño va en em para
+   que siga al texto sea cual sea, y el desplazamiento vertical se midió contra
+   la x de Inter a 17 px: sin él el icono se sentaba más alto que la palabra,
+   porque el trazo de un dibujo no tiene la misma altura que una letra.
+
+   No hay ningún color aquí: el SVG usa currentColor y hereda el del enlace. */
+.pie-contacto .icono {
+  width: 1.0625em;
+  height: 1.0625em;
+  margin-right: 0.5rem;
+  vertical-align: -0.16em;
+}
+
 .pie-lugar {
   color: var(--texto-suave);
   font-size: 0.9375rem;
