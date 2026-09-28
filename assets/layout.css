@@ -98,27 +98,21 @@ main > section h2 {
   margin-bottom: 1.5rem;
 }
 
-/* El párrafo de entrada de cada sección se mantiene corto de ancho a propósito:
-   es un texto de una o dos frases y a 608 px se lee de un vistazo. */
+/* Los párrafos de entrada de sección van a lo ancho de la sección y
+   justificados, como el bloque de Sobre mí y como el resumen de la portada.
+   Antes este párrafo estaba topado a 38rem, que son 608 px, y el de presupuesto
+   llevaba un #presupuesto .seccion-intro por encima para deshacer ese tope. Con
+   las dos secciones igualadas, el override no tenía sentido: la clase sola
+   alcanza y queda una regla en vez de dos.
+
+   hyphens: auto por lo mismo que en los otros dos: un texto justificado sin
+   partición de palabras abre ríos de blanco. El diccionario sale del lang que
+   declara cada página, y las cuatro la declaran. */
 .seccion-intro {
-  max-width: var(--ancho-texto);
   color: var(--texto-suave);
-  margin-bottom: 2rem;
-}
-
-/* El de la sección de presupuesto sí va aJustificado y a lo ancho de la
-   sección, como el bloque de Sobre mí. La clase es la misma que el de
-   Credenciales, que se queda angosto: aquí lo que seJustifica es un texto que
-   anuncia lo que viene debajo, y ahí importa que la línea termine de leerse
-   entera antes de bajar al formulario.
-
-   max-width: none anula el --ancho-texto de arriba, y el selector con id gana
-   en especificidad. hyphens: auto viene con lo mismo que en Sobre mí: sin
-   partición de palabras, un texto justificado abre ríos de blanco. */
-#presupuesto .seccion-intro {
-  max-width: none;
   text-align: justify;
   hyphens: auto;
+  margin-bottom: 2rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -967,9 +961,17 @@ footer {
   font-size: 0.9375rem;
 }
 
+/* Las dos líneas legales al centro, para que el pie quede con los rótulos
+   centrados igual que los títulos del cuerpo.
+
+   No hace falta nada para el escalón ancho: a partir de 48rem el lugar se va a
+   la segunda columna y las líneas legales ocupan las dos con
+   grid-column: 1 / -1, así que centrarlas da el mismo resultado en los dos
+   anchos de la rejilla. */
 .pie-legal {
   color: var(--texto-suave);
   font-size: 0.875rem;
+  text-align: center;
 }
 
 @media (min-width: 48rem) {
